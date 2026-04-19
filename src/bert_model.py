@@ -16,14 +16,20 @@ texts = df["clean_text"].astype(str).tolist()
 # ================================
 # LOAD PRETRAINED BERT MODEL
 # ================================
-# This uses a pretrained sentiment model
-classifier = pipeline("sentiment-analysis")
+# This uses a pretrained sentiment model with truncation enabled
+classifier = pipeline(
+    "sentiment-analysis", 
+    model="distilbert/distilbert-base-uncased-finetuned-sst-2-english",
+    truncation=True, 
+    max_length=512
+)
 
 
 # ================================
 # RUN PREDICTIONS
 # ================================
-results = classifier(texts)
+# Pre-clipping text strings to avoid memory overhead and ensuring truncation is active
+results = classifier(texts, truncation=True)
 
 
 # ================================
