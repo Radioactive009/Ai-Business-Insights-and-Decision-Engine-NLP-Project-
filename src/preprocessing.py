@@ -1,72 +1,67 @@
 import pandas as pd
 import spacy
+import os
+from tqdm import tqdm
 
 # ================================
 # LOAD SPACY MODEL
 # ================================
-nlp = spacy.load("en_core_web_sm")
+try:
+    nlp = spacy.load("en_core_web_sm")
+except OSError:
+    print("SpaCy model 'en_core_web_sm' not found. Downloading...")
+    import subprocess
+    import sys
+    subprocess.check_call([sys.executable, "-m", "spacy", "download", "en_core_web_sm"])
+    nlp = spacy.load("en_core_web_sm")
 
 
 # ================================
 # LOAD CLEANED CSV DATA
 # ================================
-df = pd.read_csv("data/cleaned_reviews.csv")
+# Ensuring the path works whether run from root or src directory
+script_dir = os.path.dirname(os.path.abspath(__file__))
+data_path = os.path.join(os.path.dirname(script_dir), "data", "cleaned_reviews.csv")
+
+if not os.path.exists(data_path):
+    # Fallback to current directory for flexibility
+    data_path = "data/cleaned_reviews.csv"
+
+print(f"Loading data from: {data_path}")
+df = pd.read_csv(data_path)
 
 
 # ================================
-# TOKENIZATION + STOPWORD REMOVAL + LEMMATIZATION
+# BATCH NLP PROCESSING
 # ================================
-def process_text(text):
-    text = str(text)
-    doc = nlp(text)
+# We combine Tokenization, Stopword Removal, Lemmatization, POS Tagging, and NER 
+# into a single efficient pass using nlp.pipe for much faster execution.
 
-    tokens = []
+processed_texts = []
+pos_tags_list = []
+entities_list = []
 
-    for token in doc:
-        # TOKENIZATION:
-        # spaCy splits sentence into individual words (tokens)
+print(f"Processing {len(df)} reviews using spaCy...")
 
-        # STOPWORD REMOVAL:
-        # Remove common words like "the", "is", "and"
+# nlp.pipe is the optimized way to process large amounts of text in batches
+for doc in tqdm(nlp.pipe(df["clean_text"].astype(str), batch_size=50), total=len(df)):
+    
+    # 1. TOKENIZATION + STOPWORD REMOVAL + LEMMATIZATION
+    # spaCy splits sentence into individual words (tokens)
+    # Convert word to base form (running → run) and skip common words (is, the, etc.)
+    tokens = [token.lemma_ for token in doc if not token.is_stop and not token.is_punct]
+    processed_texts.append(" ".join(tokens))
+    
+    # 2. POS TAGGING (Each token mapped to its grammatical role)
+    pos_tags_list.append([(token.text, token.pos_) for token in doc])
+    
+    # 3. NAMED ENTITY RECOGNITION (NER) (Extract names, places, dates, etc.)
+    entities_list.append([(ent.text, ent.label_) for ent in doc.ents])
 
-        # LEMMATIZATION:
-        # Convert word to base form (running → run)
-
-        if not token.is_stop and not token.is_punct:
-            tokens.append(token.lemma_)
-
-    return " ".join(tokens)
-
-
-df["processed_text"] = df["clean_text"].apply(process_text)
-
-
-# ================================
-# POS TAGGING (Morphology)
-# ================================
-def get_pos_tags(text):
-    text = str(text)
-    doc = nlp(text)
-
-    # Each token mapped to its grammatical role
-    return [(token.text, token.pos_) for token in doc]
-
-
-df["pos_tags"] = df["clean_text"].apply(get_pos_tags)
-
-
-# ================================
-# NAMED ENTITY RECOGNITION (NER)
-# ================================
-def get_entities(text):
-    text = str(text)
-    doc = nlp(text)
-
-    # Extract entities like names, places, dates
-    return [(ent.text, ent.label_) for ent in doc.ents]
-
-
-df["entities"] = df["clean_text"].apply(get_entities)
+# Add the results back to the dataframe
+df["processed_text"] = processed_texts
+df["pos_tags"] = pos_tags_list
+df["entities"] = entities_list
 
 
 # ================================
