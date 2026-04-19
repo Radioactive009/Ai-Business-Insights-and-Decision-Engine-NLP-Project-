@@ -14,6 +14,9 @@ from sklearn.metrics import classification_report
 # ================================
 df = pd.read_csv("../data/processed_reviews.csv")
 
+# Remove any empty reviews produced during preprocessing (NaN values)
+df = df.dropna(subset=["processed_text"])
+
 # Use processed_text (VERY IMPORTANT)
 X = df["processed_text"]
 y = df["sentiment"]
@@ -39,7 +42,8 @@ X_train, X_test, y_train, y_test = train_test_split(
 # ================================
 # MODEL TRAINING (LOGISTIC REGRESSION)
 # ================================
-model = LogisticRegression(max_iter=200)
+# class_weight='balanced' helps the model learn from minority classes (Neutral/Negative)
+model = LogisticRegression(max_iter=200, class_weight="balanced")
 
 model.fit(X_train, y_train)
 
