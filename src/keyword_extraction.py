@@ -30,7 +30,17 @@ texts = df["processed_text"].astype(str)
 # ============================================
 # APPLY TF-IDF VECTORIZATION
 # ============================================
-vectorizer = TfidfVectorizer(max_features=5000)
+# Upgraded with bigrams, custom stopwords, and frequency filtering
+custom_stopwords = ["product", "item", "use", "work", "great", "good"]
+from sklearn.feature_extraction import text
+final_stopwords = list(text.ENGLISH_STOP_WORDS.union(custom_stopwords))
+
+vectorizer = TfidfVectorizer(
+    max_features=5000,
+    stop_words=final_stopwords,
+    ngram_range=(1, 2),  # include bigrams
+    min_df=5             # ignore rare words
+)
 X = vectorizer.fit_transform(texts)
 
 # Get feature names (words)
@@ -75,7 +85,12 @@ def get_keywords_by_sentiment(sentiment):
     subset = df[df["sentiment"] == sentiment]
     texts = subset["processed_text"].astype(str)
 
-    vec = TfidfVectorizer(max_features=3000)
+    vec = TfidfVectorizer(
+        max_features=3000,
+        stop_words=final_stopwords,
+        ngram_range=(1, 2),
+        min_df=5
+    )
     X_subset = vec.fit_transform(texts)
 
     return get_top_keywords(X_subset, vec.get_feature_names_out(), top_n=10)
