@@ -12,7 +12,7 @@ from sklearn.metrics import classification_report
 # ================================
 # LOAD DATA
 # ================================
-df = pd.read_csv("../data/cleaned_reviews.csv")
+df = pd.read_csv("../data/processed_reviews.csv")
 
 # Use processed_text (VERY IMPORTANT)
 X = df["processed_text"]

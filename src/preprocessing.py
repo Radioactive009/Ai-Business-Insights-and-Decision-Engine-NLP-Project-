@@ -75,3 +75,12 @@ print(df[[
     "pos_tags",
     "entities"
 ]].head())
+
+
+# ================================
+# SAVE PROCESSED DATA (FOR ML MODEL)
+# ================================
+output_path = os.path.join(os.path.dirname(script_dir), "data", "processed_reviews.csv")
+print(f"\nSaving processed data to: {output_path}")
+df.to_csv(output_path, index=False)
+print("Saved successfully! ✅")
