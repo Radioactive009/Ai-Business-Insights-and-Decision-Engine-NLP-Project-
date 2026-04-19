@@ -26,14 +26,11 @@ df = pd.read_csv("../data/cleaned_reviews.csv")
 # ============================================
 # DEFINE BUSINESS ASPECTS
 # ============================================
-# These are categories we want to analyze
-# Each aspect has related keywords
-
+# Updated keywords to better match a book/novel dataset
 aspects = {
-    "delivery": ["delivery", "shipping", "late", "arrived", "delay"],
-    "price": ["price", "cost", "expensive", "cheap", "value"],
-    "quality": ["quality", "product", "build", "material", "durable"],
-    "service": ["service", "support", "customer", "help", "response"]
+    "content": ["story", "plot", "character", "novel", "book"],
+    "writing": ["writing", "author", "style"],
+    "emotion": ["boring", "interesting", "exciting", "love"],
 }
 
 
@@ -96,9 +93,10 @@ df["aspect_sentiment"] = df.apply(aspect_sentiment, axis=1)
 # ============================================
 # DISPLAY SAMPLE OUTPUT
 # ============================================
-print("\n===== SAMPLE ASPECT-BASED OUTPUT =====\n")
+print("\n===== SAMPLE ASPECT-BASED OUTPUT (FILTERED) =====\n")
 
-print(df[[
+# Only show rows where at least one aspect was detected
+print(df[df["aspect_sentiment"].astype(str) != "{}"][[
     "clean_text",
     "sentiment",
     "aspect_sentiment"
