@@ -7,7 +7,8 @@ from transformers import pipeline
 # ================================
 df = pd.read_csv("../data/cleaned_reviews.csv")
 
-# Take smaller sample (BERT is slow)
+# Take smaller sample (BERT is slow) and remove neutral for binary BERT model
+df = df[df["sentiment"] != "neutral"]
 df = df.sample(1000, random_state=42)
 
 texts = df["clean_text"].astype(str).tolist()
