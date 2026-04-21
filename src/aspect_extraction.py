@@ -20,7 +20,7 @@ import pandas as pd
 # LOAD DATA
 # ============================================
 # Make sure path is correct based on your folder structure
-df = pd.read_csv("../data/cleaned_reviews.csv")
+df = pd.read_csv("../data/processed_reviews.csv")
 
 
 # ============================================

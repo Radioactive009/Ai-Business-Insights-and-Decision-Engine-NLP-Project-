@@ -31,7 +31,7 @@ texts = df["processed_text"].astype(str)
 # APPLY TF-IDF VECTORIZATION
 # ============================================
 # Upgraded with bigrams, custom stopwords, and frequency filtering
-custom_stopwords = ["product", "item", "use", "work", "great", "good"]
+custom_stopwords = ["product", "item", "use", "work", "read", "book", "author", "story", "good", "great", "just", "quality", "excellent", "perfect"]
 from sklearn.feature_extraction import text
 final_stopwords = list(text.ENGLISH_STOP_WORDS.union(custom_stopwords))
 
