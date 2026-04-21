@@ -11,7 +11,7 @@ df = pd.read_csv("../data/processed_reviews.csv")
 # Note: Neutral reviews are now filtered in preprocessing.py
 df = df.sample(1000, random_state=42)
 
-texts = df["processed_text"].astype(str).tolist()
+texts = df["clean_text"].astype(str).tolist()
 
 
 # ================================
