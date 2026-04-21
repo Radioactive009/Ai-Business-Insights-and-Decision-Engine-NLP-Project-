@@ -120,23 +120,27 @@ def tokenize(text):
 # ============================================
 stopwords = set([
     'the', 'is', 'and', 'in', 'to', 'it', 'of', 'for', 'on', 'this',
-    'that', 'was', 'with', 'as', 'but', 'are'
+    'that', 'was', 'with', 'as', 'but', 'are', 'i', 'you', 'he', 'she', 
+    'they', 'we', 'have', 'has', 'had', 'do', 'does', 'did', 'a', 'an', 
+    'be', 'been', 'being'
 ])
 
 def remove_stopwords(tokens):
     return [word for word in tokens if word not in stopwords]
 
 # ============================================
-# STEP 4: LEMMATIZATION (SIMPLE RULE-BASED)
+# STEP 4: LEMMATIZATION (IMPROVED RULE-BASED)
 # ============================================
 def lemmatize(tokens):
     lemmas = []
     for word in tokens:
-        if word.endswith("ing"):
+        if word.endswith("ies") and len(word) > 4:
+            word = word[:-3] + "y"
+        elif word.endswith("ing") and len(word) > 4:
             word = word[:-3]
-        elif word.endswith("ed"):
+        elif word.endswith("ed") and len(word) > 3:
             word = word[:-2]
-        elif word.endswith("s"):
+        elif word.endswith("s") and len(word) > 3:
             word = word[:-1]
         lemmas.append(word)
     return lemmas
@@ -145,8 +149,8 @@ def lemmatize(tokens):
 # APPLY PIPELINE
 # ============================================
 def process_text(text):
-    text = clean_text(text)
-    tokens = tokenize(text)
+    # Note: text is already cleaned in cleaned_reviews.csv
+    tokens = tokenize(str(text))
     tokens = remove_stopwords(tokens)
     tokens = lemmatize(tokens)
     return " ".join(tokens)
