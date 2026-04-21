@@ -100,7 +100,4 @@ print("\n===== POSITIVE KEYWORDS =====\n")
 print(get_keywords_by_sentiment("positive"))
 
 print("\n===== NEGATIVE KEYWORDS =====\n")
-print(get_keywords_by_sentiment("negative"))
-
-print("\n===== NEUTRAL KEYWORDS =====\n")
-print(get_keywords_by_sentiment("neutral"))
+print(get_keywords_by_sentiment("negative"))

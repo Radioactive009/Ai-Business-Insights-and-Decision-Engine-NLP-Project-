@@ -5,13 +5,13 @@ from transformers import pipeline
 # ================================
 # LOAD DATA
 # ================================
-df = pd.read_csv("../data/cleaned_reviews.csv")
+df = pd.read_csv("../data/processed_reviews.csv")
 
-# Take smaller sample (BERT is slow) and remove neutral for binary BERT model
-df = df[df["sentiment"] != "neutral"]
+# Take smaller sample (BERT is slow)
+# Note: Neutral reviews are now filtered in preprocessing.py
 df = df.sample(1000, random_state=42)
 
-texts = df["clean_text"].astype(str).tolist()
+texts = df["processed_text"].astype(str).tolist()
 
 
 # ================================

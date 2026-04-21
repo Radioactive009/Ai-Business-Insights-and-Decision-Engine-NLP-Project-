@@ -1,61 +1,78 @@
-import pandas as pd
+# ============================================
+# SENTIMENT ANALYSIS (BINARY CLASSIFICATION)
+# ============================================
 
-# ================================
-# IMPORT ML LIBRARIES
-# ================================
+# This script:
+# 1. Loads processed data
+# 2. Removes neutral class
+# 3. Converts text to TF-IDF vectors
+# 4. Trains Logistic Regression model
+# 5. Evaluates performance
+
+# ============================================
+# IMPORT LIBRARIES
+# ============================================
+import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import classification_report
 
 
-# ================================
+# ============================================
 # LOAD DATA
-# ================================
+# ============================================
 df = pd.read_csv("../data/processed_reviews.csv")
 
-# Remove any empty reviews produced during preprocessing (NaN values)
+# Defensive check: Remove any NaN reviews that might have slipped through
 df = df.dropna(subset=["processed_text"])
 
-# Use processed_text (VERY IMPORTANT)
+
+# ============================================
+# FEATURES AND LABELS
+# ============================================
+# Note: Neutral reviews and empty rows are now filtered in preprocessing.py
 X = df["processed_text"]
 y = df["sentiment"]
 
 
-# ================================
-# TEXT VECTORIZATION (TF-IDF)
-# ================================
-# Converts text → numerical representation
-vectorizer = TfidfVectorizer(max_features=5000)
-
-X_vectorized = vectorizer.fit_transform(X)
-
-
-# ================================
+# ============================================
 # TRAIN-TEST SPLIT
-# ================================
+# ============================================
 X_train, X_test, y_train, y_test = train_test_split(
-    X_vectorized, y, test_size=0.2, random_state=42
+    X, y, test_size=0.2, random_state=42
 )
 
 
-# ================================
-# MODEL TRAINING (LOGISTIC REGRESSION)
-# ================================
-# class_weight='balanced' helps the model learn from minority classes (Neutral/Negative)
-model = LogisticRegression(max_iter=200, class_weight="balanced")
+# ============================================
+# TF-IDF VECTORIZATION (IMPROVED)
+# ============================================
+vectorizer = TfidfVectorizer(
+    max_features=5000,
+    stop_words="english",
+    ngram_range=(1, 2),
+    min_df=5
+)
 
-model.fit(X_train, y_train)
+X_train_vec = vectorizer.fit_transform(X_train)
+X_test_vec = vectorizer.transform(X_test)
 
 
-# ================================
-# MODEL PREDICTION
-# ================================
-y_pred = model.predict(X_test)
+# ============================================
+# TRAIN MODEL (BINARY LOGISTIC REGRESSION)
+# ============================================
+model = LogisticRegression(class_weight="balanced")
+model.fit(X_train_vec, y_train)
 
 
-# ================================
+# ============================================
+# PREDICTIONS
+# ============================================
+y_pred = model.predict(X_test_vec)
+
+
+# ============================================
 # EVALUATION
-# ================================
-print("\n===== MODEL PERFORMANCE =====\n")
+# ============================================
+print("\n===== BINARY MODEL PERFORMANCE =====\n")
 print(classification_report(y_test, y_pred))
