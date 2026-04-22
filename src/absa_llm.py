@@ -111,19 +111,24 @@ def run_tests():
 def run_on_dataset():
     import pandas as pd
 
-    print("\n===== RUNNING ON DATASET (SAMPLED) =====\n")
+    print("\n===== RUNNING ON DATASET (MIXED SAMPLE) =====\n")
 
     try:
         df = pd.read_csv("../data/processed_reviews.csv")
         
-        # Apply to a small sample for verification
-        df_sample = df.head(5).copy()
-        print("Processing first 5 reviews...")
+        # Take 3 Positive and 3 Negative reviews to see the difference
+        pos_sample = df[df["sentiment"] == "positive"].head(3)
+        neg_sample = df[df["sentiment"] == "negative"].head(3)
+        
+        df_sample = pd.concat([pos_sample, neg_sample]).copy()
+        print(f"Processing {len(df_sample)} mixed reviews...")
         
         df_sample["llm_absa"] = df_sample["clean_text"].apply(lambda x: absa_llm(x))
         
-        print("\nResults:")
-        print(df_sample[["clean_text", "llm_absa"]])
+        print("\nResults (Positive & Negative Examples):")
+        for _, row in df_sample.iterrows():
+            print(f"\n[{row['sentiment'].upper()}] Review: {row['clean_text'][:80]}...")
+            print(f"ABSA Output: {row['llm_absa']}")
         
     except FileNotFoundError:
         print("Error: processed_reviews.csv not found.")
