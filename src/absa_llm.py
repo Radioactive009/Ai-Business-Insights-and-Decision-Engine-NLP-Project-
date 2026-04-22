@@ -17,8 +17,9 @@ def absa_llm(review, model_name="llama3:latest", retry=True):
     """
 
     system_prompt = (
-        "You are a strict NLP analyzer. Your ONLY output must be a valid JSON dictionary. "
-        "Do NOT include any introduction, explanation, or code blocks. "
+        "You are a strict NLP analyzer. Your ONLY output must be a FLAT JSON dictionary. "
+        "Example Format: {\"aspect\": \"sentiment\", \"aspect2\": \"sentiment\"} "
+        "Do NOT nest dictionaries. Do NOT use lists. Do NOT include any introduction. "
         "STRICT RULES: "
         "1. Extract ONLY the 3-5 most important aspects explicitly mentioned. "
         "2. Sentiments must ONLY be 'positive' or 'negative'. NEVER use 'neutral'. "
@@ -26,11 +27,9 @@ def absa_llm(review, model_name="llama3:latest", retry=True):
     )
     
     user_prompt = f"""
-Analyze the aspects and sentiment of this review.
-
-Review: "{review}"
-
-JSON Result:"""
+Return a flat JSON dictionary for this review:
+"{review}"
+"""
 
     import time
     
