@@ -150,53 +150,70 @@ def lemmatize(tokens):
 # ============================================
 def pos_tagger(tokens):
     """
-    Assigns Part-of-Speech tags based on rules and word patterns.
+    Improved Rule-Based POS Tagger.
+    Assigns tags based on expanded dictionaries, suffixes, and patterns.
     """
     tagged_output = []
     
-    # Define rule dictionaries
-    verbs = {"is", "am", "are", "was", "were"}
-    determiners = {"the", "a", "an"}
-    conjunctions = {"and", "or", "but"}
+    # Expanded Rule Dictionaries
+    verbs = {"is", "am", "are", "was", "were", "be", "been", "being", "have", "has", "had", "do", "does", "did"}
+    determiners = {"the", "a", "an", "this", "that", "these", "those", "my", "your", "his", "her", "its", "our", "their"}
+    conjunctions = {"and", "or", "but", "so", "yet", "nor", "for"}
+    prepositions = {"in", "on", "at", "to", "for", "with", "by", "about", "as", "into", "through", "after", "before", "under", "over"}
+    pronouns = {"i", "you", "he", "she", "it", "we", "they", "me", "him", "her", "us", "them", "who", "whom", "which", "what"}
     
     # Suffix rules
-    adj_suffixes = ("ous", "ful", "able", "ive")
+    adj_suffixes = ("ous", "ful", "able", "ive", "al", "ic", "ish", "less")
+    noun_suffixes = ("tion", "ment", "ness", "ity", "ism", "ship", "ance", "ence", "ist")
+    adv_suffixes = ("ly", "ward", "wise")
     
-    for word in tokens:
+    for i, word in enumerate(tokens):
         # Strip common punctuation for cleaner suffix matching
         word_clean = word.lower().strip(".,!?;:\"'()[]")
         
-        # Rule 1: Specific Verb Lookups
+        # Rule 1: Specific Lookups (Highest Priority)
         if word_clean in verbs:
             tag = "VERB"
-        
-        # Rule 2: Determiners
+        elif word_clean in pronouns:
+            tag = "PRONOUN"
         elif word_clean in determiners:
             tag = "DETERMINER"
-            
-        # Rule 3: Conjunctions
+        elif word_clean in prepositions:
+            tag = "PREPOSITION"
         elif word_clean in conjunctions:
             tag = "CONJUNCTION"
+            
+        # Rule 2: Numbers
+        elif word_clean.isdigit():
+            tag = "NUM"
+            
+        # Rule 3: Proper Nouns (Capitalized and not first word)
+        elif i > 0 and word and word[0].isupper() and word_clean not in verbs:
+            tag = "PROPER_NOUN"
             
         # Rule 4: Suffix - "ing", "ed" -> VERB
         elif word_clean.endswith("ing") or word_clean.endswith("ed"):
             tag = "VERB"
             
-        # Rule 5: Suffix - "ly" -> ADVERB
-        elif word_clean.endswith("ly"):
+        # Rule 5: Suffix - Adverbs
+        elif word_clean.endswith(adv_suffixes):
             tag = "ADVERB"
             
         # Rule 6: Suffix - Adjectives
         elif word_clean.endswith(adj_suffixes):
             tag = "ADJECTIVE"
             
-        # Rule 7: Numbers
-        elif word_clean.isdigit():
-            tag = "NUM"
-            
-        # Rule 8: Default -> NOUN
-        else:
+        # Rule 7: Suffix - Nouns
+        elif word_clean.endswith(noun_suffixes):
             tag = "NOUN"
+            
+        # Rule 8: Default
+        else:
+            # Check if it starts with a capital letter (even if first word) for Proper Noun fallback
+            if word and word[0].isupper() and i == 0:
+                tag = "PROPER_NOUN" # First word capitalization is ambiguous but often a Proper Noun
+            else:
+                tag = "NOUN"
             
         tagged_output.append((word, tag))
         
