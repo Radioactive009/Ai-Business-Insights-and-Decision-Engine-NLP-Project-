@@ -203,28 +203,84 @@ def pos_tagger(tokens):
     return tagged_output
 
 # ============================================
+# STEP 6: RULE-BASED NER TAGGING (NEW)
+# ============================================
+def ner_tagger(tokens):
+    """
+    Identifies entities like PERSON, LOCATION, DATE, and NUMBER.
+    """
+    entities = []
+    
+    # Predefined lists
+    locations = {"India", "USA", "London", "UK", "New York", "Paris", "Germany"}
+    months = {"January", "February", "March", "April", "May", "June", 
+              "July", "August", "September", "October", "November", "December"}
+    titles = {"Mr", "Mr.", "Dr", "Dr.", "Mrs", "Mrs.", "Ms", "Ms."}
+    
+    # Regex patterns
+    date_pattern = r"\d{1,2}/\d{1,2}/\d{2,4}"
+    
+    skip_next = False
+    for i, word in enumerate(tokens):
+        if skip_next:
+            skip_next = False
+            continue
+            
+        word_clean = word.strip(".,!?;:\"'()[]")
+        
+        # Rule 1: Specific Titles followed by Capitalized Word -> PERSON
+        if word_clean in titles and i + 1 < len(tokens):
+            next_word = tokens[i+1].strip(".,!?;:\"'()[]")
+            if next_word and next_word[0].isupper():
+                entities.append((f"{word} {tokens[i+1]}", "PERSON"))
+                skip_next = True
+                continue 
+        
+        # Rule 2: Date Patterns (Regex or Months)
+        if re.match(date_pattern, word_clean) or word_clean in months:
+            entities.append((word, "DATE"))
+            
+        # Rule 3: Specific Location Lookup
+        elif word_clean in locations:
+            entities.append((word, "LOCATION"))
+            
+        # Rule 4: Numbers
+        elif word_clean.isdigit():
+            entities.append((word, "NUMBER"))
+            
+        # Rule 5: Capitalized Word (not first word) -> PERSON
+        elif i > 0 and word_clean and word_clean[0].isupper():
+            if word_clean.lower() not in locations and word_clean not in months:
+                entities.append((word, "PERSON"))
+                
+    return entities
+
+# ============================================
 # APPLY PIPELINE
 # ============================================
-def process_text(text, return_pos=False):
+def process_text(text, return_pos=False, return_ner=False):
     # Note: text is already cleaned in cleaned_reviews.csv
+    # We use original text for NER/POS to keep capitalization
     tokens = tokenize(str(text))
     
-    # Apply POS tagging right after tokenization
+    # Apply POS tagging and NER tagging
     pos_tags = pos_tagger(tokens)
+    entities = ner_tagger(tokens)
     
     # Continue with stopword removal and lemmatization for the clean text
-    tokens = remove_stopwords(tokens)
-    tokens = lemmatize(tokens)
+    clean_tokens = remove_stopwords(tokens)
+    clean_tokens = lemmatize(clean_tokens)
     
-    if return_pos:
-        return " ".join(tokens), pos_tags
-    return " ".join(tokens)
+    result = [" ".join(clean_tokens)]
+    if return_pos: result.append(pos_tags)
+    if return_ner: result.append(entities)
+    
+    return tuple(result) if len(result) > 1 else result[0]
 
-# Applying the pipeline (returning only processed text for the main column)
+# Applying the pipeline
 df["processed_text"] = df["clean_text"].apply(lambda x: process_text(x))
-
-# Creating a separate column for POS tags to show integration
 df["pos_tags"] = df["clean_text"].apply(lambda x: process_text(x, return_pos=True)[1])
+df["entities"] = df["clean_text"].apply(lambda x: process_text(x, return_ner=True)[1])
 
 # ============================================
 # FILTER BINARY DATA (POSITIVE/NEGATIVE)
@@ -236,16 +292,19 @@ df = df[df["processed_text"].str.strip() != ""] # Remove empty strings that beco
 # ============================================
 # OUTPUT & EXAMPLE USAGE
 # ============================================
-print("\n===== PROCESSED DATA WITH POS TAGS =====\n")
-print(df[["clean_text", "processed_text", "pos_tags"]].head())
+print("\n===== PROCESSED DATA WITH POS & NER =====\n")
+print(df[["clean_text", "processed_text", "pos_tags", "entities"]].head())
 
 # Manual Example Usage
 print("\n===== MANUAL EXAMPLE =====\n")
-sample_text = "The quick brown fox is jumping over 2 lazy dogs and it was beautiful."
+sample_text = "Mr. Smith visited London and India in January 2024. He saw 5 birds on 12/10/2023."
 tokens = tokenize(sample_text)
 tags = pos_tagger(tokens)
+entities = ner_tagger(tokens)
+
 print(f"Input Text: {sample_text}")
-print(f"POS Tags: {tags}")
+print(f"POS Tags: {tags[:10]}...") # truncate for brevity
+print(f"Entities: {entities}")
 
 # ============================================
 # SAVE PROCESSED DATA
