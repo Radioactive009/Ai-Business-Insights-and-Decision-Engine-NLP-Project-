@@ -3,6 +3,8 @@ import pandas as pd
 import os
 import re
 from absa_llm import absa_llm
+from absa import absa_from_pos
+from preprocessing import tokenize, pos_tagger
 
 # ============================================
 # PAGE CONFIGURATION
@@ -50,7 +52,7 @@ def read_code(filename):
 st.sidebar.title("🚀 Project Pipeline")
 page = st.sidebar.radio(
     "Navigation:",
-    ["Dashboard Overview", "1. Preprocessing", "2. Sentiment Analysis", "3. LLM-Based ABSA"]
+    ["Dashboard Overview", "1. Preprocessing", "2. Sentiment Analysis", "3. Rule-Based ABSA", "4. LLM-Based ABSA", "📊 Model Comparison"]
 )
 
 st.sidebar.markdown("---")
@@ -147,20 +149,51 @@ elif page == "2. Sentiment Analysis":
         st.code(read_code("sentiment_model.py"), language="python")
 
 # ============================================
-# SECTION: LLM-BASED ABSA (VISUAL & INTERACTIVE)
+# SECTION: RULE-BASED ABSA (VISUAL)
 # ============================================
-elif page == "3. LLM-Based ABSA":
-    st.title("🔥 Step 3: Aspect-Based Insights (LLM)")
-    st.write("The most advanced stage. The LLM connects specific features to specific feelings.")
+elif page == "3. Rule-Based ABSA":
+    st.title("📏 Step 3: Rule-Based Aspect Analysis")
+    st.write("Using custom logic, POS tagging, and proximity windows to link opinions to features.")
 
-    # Visual Example
-    st.subheader("🖼️ How it works (Example)")
-    st.image("https://miro.medium.com/v2/resize:fit:1400/1*E_GfVnO1E-8I5-p-z-9g2A.png", caption="Mapping opinions to features", width=600)
+    st.subheader("🎯 Real-Time Rule Analysis")
+    rule_input = st.text_area("Enter a review for rule-based matching:", "The camera is good but the battery life is bad.")
+    
+    if st.button("Run Rule Engine"):
+        with st.spinner("Processing tags and distance..."):
+            # 1. Tokenize & Tag
+            tokens = tokenize(rule_input)
+            tags = pos_tagger(tokens)
+            # 2. Run ABSA
+            result = absa_from_pos(tags)
+            
+        if result:
+            st.success("Analysis Complete!")
+            cols = st.columns(len(result) if len(result) > 0 else 1)
+            for i, (aspect, sentiment) in enumerate(result.items()):
+                with cols[i % len(cols)]:
+                    color = "#28a745" if sentiment.lower() == "positive" else "#dc3545"
+                    st.markdown(f"""
+                        <div style="border: 2px solid {color}; padding: 15px; border-radius: 10px; text-align: center;">
+                            <b style="color: {color};">{aspect.upper()}</b><br>
+                            {sentiment.upper()}
+                        </div>
+                    """, unsafe_allow_html=True)
+        else:
+            st.warning("No aspects with clear sentiments were found using the rule-based window.")
 
     st.markdown("---")
-    
+    with st.expander("View Rule Logic (absa.py)"):
+        st.code(read_code("absa.py"), language="python")
+
+# ============================================
+# SECTION: LLM-BASED ABSA (VISUAL & INTERACTIVE)
+# ============================================
+elif page == "4. LLM-Based ABSA":
+    st.title("🔥 Step 4: Advanced LLM-Based Insights")
+    st.write("Leveraging Llama3 to understand context, multi-word aspects, and complex sentiment patterns.")
+
     # Interactive Demo
-    st.subheader("🎯 Live Demo")
+    st.subheader("🎯 Advanced Intelligence Demo")
     user_text = st.text_area("Type a complex review (try contrasting sentiments):", "The display is crystal clear but the shipping was very slow.")
     
     if st.button("Generate Deep Insights"):
