@@ -19,19 +19,18 @@ def absa_llm(review, model_name="llama3:latest", retry=True):
     system_prompt = (
         "You are a strict NLP analyzer. Your ONLY output must be a valid JSON dictionary. "
         "Do NOT include any introduction, explanation, or code blocks. "
-        "Only map aspects to 'positive' or 'negative'."
+        "STRICT RULES: "
+        "1. Extract ONLY the 3-5 most important aspects explicitly mentioned. "
+        "2. Sentiments must ONLY be 'positive' or 'negative'. NEVER use 'neutral'. "
+        "3. Output aspect names in lowercase with spaces (no underscores)."
     )
     
     user_prompt = f"""
-Analyze the following review for aspects and sentiment.
+Analyze the aspects and sentiment of this review.
 
 Review: "{review}"
 
-Format Example:
-{{"camera": "negative", "screen": "positive"}}
-
-Constraint: Output ONLY the JSON dictionary.
-JSON:"""
+JSON Result:"""
 
     import time
     
@@ -44,7 +43,7 @@ JSON:"""
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_prompt}
                 ],
-                options={"temperature": 0.1}
+                options={"temperature": 0} # Maximum consistency
             )
 
             # Get raw response and clean common markdown artifacts
@@ -59,14 +58,19 @@ JSON:"""
             if json_match:
                 json_str = json_match.group(0)
                 try:
-                    return json.loads(json_str)
-                except json.JSONDecodeError:
-                    try:
-                        # Replace common invalid single quotes with double quotes
-                        json_str_fixed = json_str.replace("'", '"')
-                        return json.loads(json_str_fixed)
-                    except:
-                        pass
+                    data = json.loads(json_str)
+                    
+                    # POST-PROCESSING: Standardize aspect names (lowercase, spaces)
+                    final_data = {}
+                    for aspect, sentiment in data.items():
+                        clean_aspect = str(aspect).replace("_", " ").lower().strip()
+                        # Final check: Skip if model still returned 'neutral'
+                        if str(sentiment).lower() != "neutral":
+                            final_data[clean_aspect] = str(sentiment).lower()
+                    
+                    return final_data
+                except:
+                    pass
             
             # If parsing failed but connection was okay, break loop and handle below
             break
