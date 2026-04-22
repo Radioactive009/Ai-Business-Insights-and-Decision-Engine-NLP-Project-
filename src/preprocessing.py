@@ -146,16 +146,85 @@ def lemmatize(tokens):
     return lemmas
 
 # ============================================
+# STEP 5: RULE-BASED POS TAGGING (NEW)
+# ============================================
+def pos_tagger(tokens):
+    """
+    Assigns Part-of-Speech tags based on rules and word patterns.
+    """
+    tagged_output = []
+    
+    # Define rule dictionaries
+    verbs = {"is", "am", "are", "was", "were"}
+    determiners = {"the", "a", "an"}
+    conjunctions = {"and", "or", "but"}
+    
+    # Suffix rules
+    adj_suffixes = ("ous", "ful", "able", "ive")
+    
+    for word in tokens:
+        # Strip common punctuation for cleaner suffix matching
+        word_clean = word.lower().strip(".,!?;:\"'()[]")
+        
+        # Rule 1: Specific Verb Lookups
+        if word_clean in verbs:
+            tag = "VERB"
+        
+        # Rule 2: Determiners
+        elif word_clean in determiners:
+            tag = "DETERMINER"
+            
+        # Rule 3: Conjunctions
+        elif word_clean in conjunctions:
+            tag = "CONJUNCTION"
+            
+        # Rule 4: Suffix - "ing", "ed" -> VERB
+        elif word_clean.endswith("ing") or word_clean.endswith("ed"):
+            tag = "VERB"
+            
+        # Rule 5: Suffix - "ly" -> ADVERB
+        elif word_clean.endswith("ly"):
+            tag = "ADVERB"
+            
+        # Rule 6: Suffix - Adjectives
+        elif word_clean.endswith(adj_suffixes):
+            tag = "ADJECTIVE"
+            
+        # Rule 7: Numbers
+        elif word_clean.isdigit():
+            tag = "NUM"
+            
+        # Rule 8: Default -> NOUN
+        else:
+            tag = "NOUN"
+            
+        tagged_output.append((word, tag))
+        
+    return tagged_output
+
+# ============================================
 # APPLY PIPELINE
 # ============================================
-def process_text(text):
+def process_text(text, return_pos=False):
     # Note: text is already cleaned in cleaned_reviews.csv
     tokens = tokenize(str(text))
+    
+    # Apply POS tagging right after tokenization
+    pos_tags = pos_tagger(tokens)
+    
+    # Continue with stopword removal and lemmatization for the clean text
     tokens = remove_stopwords(tokens)
     tokens = lemmatize(tokens)
+    
+    if return_pos:
+        return " ".join(tokens), pos_tags
     return " ".join(tokens)
 
-df["processed_text"] = df["clean_text"].apply(process_text)
+# Applying the pipeline (returning only processed text for the main column)
+df["processed_text"] = df["clean_text"].apply(lambda x: process_text(x))
+
+# Creating a separate column for POS tags to show integration
+df["pos_tags"] = df["clean_text"].apply(lambda x: process_text(x, return_pos=True)[1])
 
 # ============================================
 # FILTER BINARY DATA (POSITIVE/NEGATIVE)
@@ -165,9 +234,18 @@ df = df.dropna(subset=["processed_text"])
 df = df[df["processed_text"].str.strip() != ""] # Remove empty strings that become NaNs on reload
 
 # ============================================
-# OUTPUT
+# OUTPUT & EXAMPLE USAGE
 # ============================================
-print(df[["clean_text", "processed_text"]].head())
+print("\n===== PROCESSED DATA WITH POS TAGS =====\n")
+print(df[["clean_text", "processed_text", "pos_tags"]].head())
+
+# Manual Example Usage
+print("\n===== MANUAL EXAMPLE =====\n")
+sample_text = "The quick brown fox is jumping over 2 lazy dogs and it was beautiful."
+tokens = tokenize(sample_text)
+tags = pos_tagger(tokens)
+print(f"Input Text: {sample_text}")
+print(f"POS Tags: {tags}")
 
 # ============================================
 # SAVE PROCESSED DATA
