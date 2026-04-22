@@ -204,7 +204,7 @@ def pos_tagger(tokens):
             
         # Rule 6: Suffix - Adjectives
         elif word_clean.endswith(adj_suffixes):
-            tag = "ADJECTIVE"
+            tag = "ADJ"
             
         # Rule 7: Suffix - Nouns
         elif word_clean.endswith(noun_suffixes):
