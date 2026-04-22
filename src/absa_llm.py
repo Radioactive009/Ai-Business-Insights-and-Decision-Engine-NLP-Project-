@@ -33,50 +33,56 @@ Format Example:
 Constraint: Output ONLY the JSON dictionary.
 JSON:"""
 
-    try:
-        response = ollama.chat(
-            model=model_name,
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt}
-            ],
-            options={"temperature": 0.1} # Slightly higher than 0 to avoid loops, but keep focus
-        )
+    import time
+    
+    # 2-Attempt Loop for Network Stability
+    for attempt in range(2):
+        try:
+            response = ollama.chat(
+                model=model_name,
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_prompt}
+                ],
+                options={"temperature": 0.1}
+            )
 
-        # Get raw response and clean common markdown artifacts
-        raw_output = response["message"]["content"].strip()
-        
-        # Remove markdown code blocks if present (```json ... ```)
-        clean_output = re.sub(r'```json\s*|\s*```', '', raw_output)
-
-        # ROBUST JSON EXTRACTION: Find the first { and last }
-        json_match = re.search(r'\{.*\}', clean_output, re.DOTALL)
-        
-        if json_match:
-            json_str = json_match.group(0)
-            try:
-                return json.loads(json_str)
-            except json.JSONDecodeError:
-                # If parsing fails, try one simple cleaning step (removing single quotes)
-                try:
-                    # Replace common invalid single quotes with double quotes
-                    json_str_fixed = json_str.replace("'", '"')
-                    return json.loads(json_str_fixed)
-                except:
-                    pass
-        
-        # If we reach here, extraction/parsing failed
-        if retry:
-            # Recursive retry once with even stricter wording
-            return absa_llm(review, model_name=model_name, retry=False)
+            # Get raw response and clean common markdown artifacts
+            raw_output = response["message"]["content"].strip()
             
-        print(f"⚠️ Warning: Model {model_name} returned invalid output.")
-        print(f"Raw Output: {raw_output[:200]}...")
-        return {}
+            # Remove markdown code blocks if present (```json ... ```)
+            clean_output = re.sub(r'```json\s*|\s*```', '', raw_output)
 
-    except Exception as e:
-        print(f"❌ Connection Error: {e}")
-        return {}
+            # ROBUST JSON EXTRACTION: Find the first { and last }
+            json_match = re.search(r'\{.*\}', clean_output, re.DOTALL)
+            
+            if json_match:
+                json_str = json_match.group(0)
+                try:
+                    return json.loads(json_str)
+                except json.JSONDecodeError:
+                    try:
+                        # Replace common invalid single quotes with double quotes
+                        json_str_fixed = json_str.replace("'", '"')
+                        return json.loads(json_str_fixed)
+                    except:
+                        pass
+            
+            # If parsing failed but connection was okay, break loop and handle below
+            break
+
+        except Exception as e:
+            if attempt == 0:
+                print(f"🔄 Network glitch (500), retrying in 2 seconds...")
+                time.sleep(2)
+                continue
+            else:
+                print(f"❌ Connection Error after retry: {e}")
+                return {}
+
+    # Final fallback if parsing failed
+    print(f"⚠️ Warning: Model {model_name} returned invalid output.")
+    return {}
 
 
 # ============================================
