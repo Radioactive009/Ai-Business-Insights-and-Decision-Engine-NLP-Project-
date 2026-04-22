@@ -297,13 +297,13 @@ def process_text(text, return_pos=False, return_ner=False):
     return tuple(result) if len(result) > 1 else result[0]
 
 # Applying the pipeline
+# 1. Processed text still uses 'clean_text' (lowercased)
 df["processed_text"] = df["clean_text"].apply(lambda x: process_text(x))
-df["pos_tags"] = df["clean_text"].apply(lambda x: process_text(x, return_pos=True)[1])
-df["entities"] = df["clean_text"].apply(lambda x: process_text(x, return_ner=True)[1])
 
-# ============================================
-# FILTER BINARY DATA (POSITIVE/NEGATIVE)
-# ============================================
+# 2. POS tags and Entities now use 'review_text' (keeps capitalization for accuracy)
+df["pos_tags"] = df.apply(lambda row: process_text(row["review_text"], return_pos=True)[1], axis=1)
+df["entities"] = df.apply(lambda row: process_text(row["review_text"], return_ner=True)[1], axis=1)
+
 df = df[df["sentiment"] != "neutral"]
 df = df.dropna(subset=["processed_text"])
 df = df[df["processed_text"].str.strip() != ""] # Remove empty strings that become NaNs on reload

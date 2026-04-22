@@ -55,16 +55,17 @@ df["clean_text"] = df["review_text"].apply(clean_text)
 # ================================
 # STEP 5: FINAL DATA
 # ================================
-df = df[["clean_text", "rating", "sentiment", "date"]]
+# We keep review_text (original) for NER/Rules and clean_text for ML models
+df = df[["review_text", "clean_text", "rating", "sentiment", "date"]]
 
 # ================================
 # STEP 6: SAVE FILE
 # ================================
-df.to_csv("cleaned_reviews.csv", index=False)
+df.to_csv("../data/cleaned_reviews.csv", index=False)
 
 # ================================
 # STEP 7: OUTPUT
 # ================================
-print("✅ CLEANING DONE!")
+print("CLEANING DONE!")
 print(df.head())
 print("\nTotal rows:", len(df))
