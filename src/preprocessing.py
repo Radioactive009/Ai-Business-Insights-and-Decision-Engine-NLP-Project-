@@ -161,6 +161,7 @@ def pos_tagger(tokens):
     conjunctions = {"and", "or", "but", "so", "yet", "nor", "for"}
     prepositions = {"in", "on", "at", "to", "for", "with", "by", "about", "as", "into", "through", "after", "before", "under", "over"}
     pronouns = {"i", "you", "he", "she", "it", "we", "they", "me", "him", "her", "us", "them", "who", "whom", "which", "what"}
+    negations = {"not", "no", "never", "none", "neither", "nor", "n't"}
     
     # Suffix rules
     adj_suffixes = ("ous", "ful", "able", "ive", "al", "ic", "ish", "less")
@@ -180,6 +181,8 @@ def pos_tagger(tokens):
             tag = "DETERMINER"
         elif word_clean in prepositions:
             tag = "PREPOSITION"
+        elif word_clean in negations:
+            tag = "NEGATION"
         elif word_clean in conjunctions:
             tag = "CONJUNCTION"
             
