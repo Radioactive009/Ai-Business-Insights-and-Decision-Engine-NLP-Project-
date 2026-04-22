@@ -140,7 +140,7 @@ for _, row in clean_df.iterrows():
 # ============================================
 # GENERIC TEST CASE
 # ============================================
-print("\n===== GENERIC TEST CASE =====\n")
+
 test_text = "The camera is blurry but the screen is amazing."
 sim_pos = [
     ('The', 'DETERMINER'), ('camera', 'NOUN'), ('is', 'VERB'), ('blurry', 'ADJ'), 
