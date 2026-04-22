@@ -158,7 +158,7 @@ def process_text(text):
 df["processed_text"] = df["clean_text"].apply(process_text)
 
 # ============================================
-# FILTER BINARY DATA (POSITIVE/NEGATIVE ONLY)
+# FILTER BINARY DATA (POSITIVE/NEGATIVE)
 # ============================================
 df = df[df["sentiment"] != "neutral"]
 df = df.dropna(subset=["processed_text"])
