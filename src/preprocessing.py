@@ -233,6 +233,7 @@ def ner_tagger(tokens):
     months = {"January", "February", "March", "April", "May", "June", 
               "July", "August", "September", "October", "November", "December"}
     titles = {"Mr", "Mr.", "Dr", "Dr.", "Mrs", "Mrs.", "Ms", "Ms."}
+    pronouns = {"I", "You", "He", "She", "It", "We", "They", "Me", "Him", "Her", "Us", "Them"}
     
     # Regex patterns
     date_pattern = r"\d{1,2}/\d{1,2}/\d{2,4}"
@@ -267,7 +268,8 @@ def ner_tagger(tokens):
             
         # Rule 5: Capitalized Word (not first word) -> PERSON
         elif i > 0 and word_clean and word_clean[0].isupper():
-            if word_clean.lower() not in locations and word_clean not in months:
+            # Exclude locations, months, and pronouns
+            if word_clean.lower() not in locations and word_clean not in months and word_clean not in pronouns:
                 entities.append((word, "PERSON"))
                 
     return entities
