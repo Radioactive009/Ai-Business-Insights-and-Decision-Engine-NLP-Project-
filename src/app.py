@@ -4,7 +4,7 @@ import os
 import re
 from absa_llm import absa_llm
 from absa import absa_from_pos
-from preprocessing import tokenize, pos_tagger, ner_tagger
+from preprocessing import tokenize, pos_tagger, ner_tagger, remove_stopwords, lemmatize
 
 # ============================================
 # PAGE CONFIGURATION
@@ -127,6 +127,8 @@ elif page == "1. Preprocessing":
                     tokens = tokenize(text)
                     tags = pos_tagger(tokens)
                     entities = ner_tagger(tokens)
+                    clean_tokens = remove_stopwords(tokens)
+                    lemms = lemmatize(clean_tokens)
                     
                     col1, col2 = st.columns(2)
                     
@@ -134,9 +136,12 @@ elif page == "1. Preprocessing":
                         st.markdown("**Raw Review Segment:**")
                         st.info(text)
                         
+                        st.markdown("**Step 2: Stopword Removal**")
+                        st.write(f"`{clean_tokens[:10]}...`")
+                        
                     with col2:
                         st.markdown("**Structured Data:**")
-                        st.write(f"🏷️ **Tokens:** `{tokens[:10]}...`")
+                        st.write(f"🏷️ **Tokens:** `{tokens[:8]}...`")
                         
                         # Formatted POS Tags (Top 5)
                         pos_formatted = ", ".join([f"{word} ({tag})" for word, tag in tags if tag in ["NOUN", "ADJ", "PROPER_NOUN"]][:5])
@@ -145,6 +150,9 @@ elif page == "1. Preprocessing":
                         # Formatted Entities
                         ent_formatted = ", ".join([f"{ent} ({label})" for ent, label in entities])
                         st.write(f"🏢 **Entities:** {ent_formatted if ent_formatted else 'None detected'}")
+                        
+                        st.markdown("**Step 3: Lemmatization (Final Result)**")
+                        st.success(" ".join(lemms))
         else:
             st.warning("Dataset not found. Showing static example instead.")
     except Exception as e:
