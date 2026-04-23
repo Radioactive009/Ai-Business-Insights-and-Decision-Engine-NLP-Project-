@@ -191,15 +191,18 @@ elif page == "2. Sentiment Analysis":
     try:
         df = load_data()
         if df is not None:
-            # Take a random sample of 5 reviews
-            sample_df = df.sample(5)[["clean_text", "sentiment"]]
+            # PAGINATION CONTROL
+            st.markdown("### 📑 Browse Sentiment Data")
+            page_size_sent = 10
+            total_pages_sent = len(df) // page_size_sent
+            page_num_sent = st.number_input("Enter Page Number:", 1, total_pages_sent, 1)
+            
+            start_idx_sent = (page_num_sent - 1) * page_size_sent
+            end_idx_sent = start_idx_sent + page_size_sent
+            
+            sample_df = df.iloc[start_idx_sent:end_idx_sent][["clean_text", "sentiment"]]
             # Rename columns for display
             sample_df.columns = ["Review Text", "Detected Sentiment"]
-            
-            # Styling the sentiment column
-            def color_sentiment(val):
-                color = '#28a745' if val == 'positive' else '#dc3545'
-                return f'color: {color}; font-weight: bold'
             
             st.table(sample_df)
         else:
