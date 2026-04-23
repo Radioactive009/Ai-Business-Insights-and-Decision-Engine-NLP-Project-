@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import os
 import re
-from absa_llm import absa_llm, generate_business_strategy
+from absa_llm import absa_llm, generate_business_strategy, generate_brand_report
 from absa import absa_from_pos
 from preprocessing import tokenize, pos_tagger, ner_tagger, remove_stopwords, lemmatize
 from sentiment_model import predict_logit
@@ -96,8 +96,11 @@ if page == "Dashboard Overview":
     """)
 
     col1, col2, col3 = st.columns(3)
+    df_count = load_data()
+    row_count = len(df_count) if df_count is not None else 49132
+    
     with col1:
-        st.metric(label="Data Volume", value="50,000+", delta="Reviews")
+        st.metric(label="Data Volume", value=f"{row_count:,}", delta="Reviews")
     with col2:
         st.metric(label="Pipeline Speed", value="~5ms", delta="Per Token")
     with col3:
@@ -121,10 +124,8 @@ elif page == "1. Preprocessing":
         <div style="display: flex; justify-content: space-between; align-items: center; background: #1e2130; padding: 20px; border-radius: 15px; margin-bottom: 30px;">
             <div style="text-align: center;"><div style="background: #3b82f6; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto;">T</div><b>Tokens</b></div>
             <div style="flex: 1; height: 2px; background: #3b82f6; margin: 0 10px;"></div>
-            <div style="text-align: center;"><div style="background: #10b981; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto;">P</div><b>POS</b></div>
+            <div style="text-align: center;"><div style="background: #10b981; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto;">S</div><b>Stopwords</b></div>
             <div style="flex: 1; height: 2px; background: #10b981; margin: 0 10px;"></div>
-            <div style="text-align: center;"><div style="background: #f59e0b; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto;">N</div><b>NER</b></div>
-            <div style="flex: 1; height: 2px; background: #f59e0b; margin: 0 10px;"></div>
             <div style="text-align: center;"><div style="background: #ef4444; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto;">L</div><b>Lemmas</b></div>
         </div>
     """, unsafe_allow_html=True)
@@ -165,10 +166,6 @@ elif page == "1. Preprocessing":
                     with col2:
                         st.markdown("**Structured Data:**")
                         st.write(f"Tokens: `{tokens[:8]}...`")
-                        pos_formatted = ", ".join([f"{word} ({tag})" for word, tag in tags if tag in ["NOUN", "ADJ", "PROPER_NOUN"]][:5])
-                        st.write(f"Key POS Tags: {pos_formatted}")
-                        ent_formatted = ", ".join([f"{ent} ({label})" for ent, label in entities])
-                        st.write(f"Entities: {ent_formatted if ent_formatted else 'None detected'}")
                         st.markdown("**Step 3: Lemmatization (Final Result)**")
                         st.success(" ".join(lemms))
         else:
@@ -456,6 +453,50 @@ elif page == "Executive Insights":
             st.warning("Dataset not found.")
     except Exception as e:
         st.error(f"Error loading executive data: {e}")
+
+    st.markdown("---")
+
+    st.markdown("---")
+    st.subheader("Global Brand Health & Satisfaction Trends")
+    st.write("This section analyzes the entire dataset to find global patterns impacting brand perception.")
+    
+    if st.button("Generate Global Brand Report"):
+        try:
+            df = load_data()
+            if df is not None:
+                with st.spinner("Analyzing 50,000 reviews for global trends..."):
+                    # Quick way to get trends: Top nouns in positive vs negative
+                    pos_df = df[df["sentiment"] == "positive"]
+                    neg_df = df[df["sentiment"] == "negative"]
+                    
+                    # Simulating trend extraction (top words excluding common ones)
+                    ignore = ["product", "item", "great", "good", "bad", "buy", "bought", "one"]
+                    
+                    def get_trends(text_list):
+                        words = " ".join(text_list.astype(str)).split()
+                        freq = pd.Series([w for w in words if len(w) > 3 and w not in ignore]).value_counts()
+                        return freq.head(5).index.tolist()
+                    
+                    top_pos = get_trends(pos_df["processed_text"])
+                    top_neg = get_trends(neg_df["processed_text"])
+                    
+                    # Generate LLM Report
+                    report = generate_brand_report(top_pos, top_neg)
+                    
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.write("### **Positive Trends**")
+                    st.success(", ".join(top_pos))
+                    st.write("### **Negative Trends**")
+                    st.error(", ".join(top_neg))
+                    
+                with col2:
+                    st.write("### **Strategic Brand Health Report**")
+                    st.info(report)
+            else:
+                st.warning("Dataset not found.")
+        except Exception as e:
+            st.error(f"Error: {e}")
 
     st.markdown("---")
 
