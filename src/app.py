@@ -40,6 +40,14 @@ st.markdown("""
 # HELPER FUNCTIONS (CACHED)
 # ============================================
 @st.cache_data
+def load_data():
+    try:
+        # Load the processed reviews dataset
+        return pd.read_csv("../data/processed_reviews.csv")
+    except:
+        return None
+
+@st.cache_data
 def read_code(filename):
     try:
         with open(filename, "r", encoding="utf-8") as f:
@@ -101,41 +109,46 @@ if page == "Dashboard Overview":
     """)
 
 # ============================================
-# SECTION: 1. Preprocessing (INTERACTIVE)
+# SECTION: 1. Preprocessing (DATASET EXAMPLES)
 # ============================================
 elif page == "1. Preprocessing":
     st.title("🔍 Step 1: Preprocessing & Tagging")
-    st.write("Before analysis, we must break down the raw text into structured components.")
+    st.write("Below are examples of how our engine structures raw customer feedback from the dataset.")
 
-    st.markdown("### **Custom Input Analysis**")
-    user_prep_input = st.text_input("Enter a sentence to see the NLP pipeline in action:", "Samsung's battery life is great in London.")
-    
-    if user_prep_input:
-        with st.container():
-            # Run the actual pipeline
-            tokens = tokenize(user_prep_input)
-            tags = pos_tagger(tokens)
-            entities = ner_tagger(tokens)
+    try:
+        df = load_data()
+        if df is not None:
+            # Select 3 interesting reviews for demonstration
+            examples = df["clean_text"].head(3).tolist()
             
-            col1, col2 = st.columns(2)
-            
-            with col1:
-                st.markdown("#### **Input (Raw)**")
-                st.info(user_prep_input)
-                
-            with col2:
-                st.markdown("#### **Output (Structured)**")
-                st.write("---")
-                # Visualization of results
-                st.write(f"**Tokens:** `{tokens}`")
-                
-                # Formatted POS Tags
-                pos_formatted = ", ".join([f"{word} ({tag})" for word, tag in tags if tag in ["NOUN", "ADJ", "PROPER_NOUN"]])
-                st.write(f"**Key POS Tags:** {pos_formatted if pos_formatted else 'No key tags found'}")
-                
-                # Formatted Entities
-                ent_formatted = ", ".join([f"{ent} ({label})" for ent, label in entities])
-                st.write(f"**Entities:** {ent_formatted if ent_formatted else 'No entities detected'}")
+            for i, text in enumerate(examples):
+                with st.expander(f"Review Example {i+1}: {text[:60]}...", expanded=True):
+                    # Run the actual pipeline
+                    tokens = tokenize(text)
+                    tags = pos_tagger(tokens)
+                    entities = ner_tagger(tokens)
+                    
+                    col1, col2 = st.columns(2)
+                    
+                    with col1:
+                        st.markdown("**Raw Review Segment:**")
+                        st.info(text)
+                        
+                    with col2:
+                        st.markdown("**Structured Data:**")
+                        st.write(f"🏷️ **Tokens:** `{tokens[:10]}...`")
+                        
+                        # Formatted POS Tags (Top 5)
+                        pos_formatted = ", ".join([f"{word} ({tag})" for word, tag in tags if tag in ["NOUN", "ADJ", "PROPER_NOUN"]][:5])
+                        st.write(f"📌 **Key POS Tags:** {pos_formatted}")
+                        
+                        # Formatted Entities
+                        ent_formatted = ", ".join([f"{ent} ({label})" for ent, label in entities])
+                        st.write(f"🏢 **Entities:** {ent_formatted if ent_formatted else 'None detected'}")
+        else:
+            st.warning("Dataset not found. Showing static example instead.")
+    except Exception as e:
+        st.error(f"Error processing samples: {e}")
 
     st.markdown("---")
     st.subheader("💡 Why this matters?")
