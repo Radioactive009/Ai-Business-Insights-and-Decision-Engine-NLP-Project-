@@ -113,6 +113,20 @@ if page == "Dashboard Overview":
 # ============================================
 elif page == "1. Preprocessing":
     st.title("🔍 Step 1: Preprocessing & Tagging")
+    
+    # academic diagram
+    st.markdown("""
+        <div style="display: flex; justify-content: space-between; align-items: center; background: #1e2130; padding: 20px; border-radius: 15px; margin-bottom: 30px;">
+            <div style="text-align: center;"><div style="background: #3b82f6; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto;">T</div><b>Tokens</b></div>
+            <div style="flex: 1; height: 2px; background: #3b82f6; margin: 0 10px;"></div>
+            <div style="text-align: center;"><div style="background: #10b981; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto;">P</div><b>POS</b></div>
+            <div style="flex: 1; height: 2px; background: #10b981; margin: 0 10px;"></div>
+            <div style="text-align: center;"><div style="background: #f59e0b; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto;">N</div><b>NER</b></div>
+            <div style="flex: 1; height: 2px; background: #f59e0b; margin: 0 10px;"></div>
+            <div style="text-align: center;"><div style="background: #ef4444; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto;">L</div><b>Lemmas</b></div>
+        </div>
+    """, unsafe_allow_html=True)
+
     st.write("Below are examples of how our engine structures raw customer feedback from the dataset.")
 
     try:
@@ -172,6 +186,18 @@ elif page == "1. Preprocessing":
 # ============================================
 elif page == "2. Sentiment Analysis":
     st.title("📈 Step 2: Global Sentiment Classification")
+    
+    # academic diagram
+    st.markdown("""
+        <div style="display: flex; justify-content: space-around; align-items: center; background: #1e2130; padding: 20px; border-radius: 15px; margin-bottom: 30px;">
+            <div style="text-align: center;"><div style="background: #3b82f6; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto;">V</div><b>TF-IDF</b></div>
+            <div style="flex: 1; height: 2px; background: #3b82f6; margin: 0 10px;"></div>
+            <div style="text-align: center;"><div style="background: #10b981; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto;">LR</div><b>Logit Reg.</b></div>
+            <div style="flex: 1; height: 2px; background: #10b981; margin: 0 10px;"></div>
+            <div style="text-align: center;"><div style="background: #ef4444; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto;">B</div><b>BERT</b></div>
+        </div>
+    """, unsafe_allow_html=True)
+
     st.write("We use Logistic Regression and BERT to determine if a review is generally Happy or Unhappy.")
 
     col1, col2 = st.columns(2)
@@ -186,7 +212,7 @@ elif page == "2. Sentiment Analysis":
 
     st.markdown("---")
     st.subheader("📊 Model Performance on Dataset")
-    st.write("Below are 5 random reviews processed by our sentiment classifier.")
+    st.write("Below are 10 reviews from our dataset processed by our sentiment classifier.")
     
     try:
         df = load_data()
@@ -219,6 +245,18 @@ elif page == "2. Sentiment Analysis":
 # ============================================
 elif page == "3. Rule-Based ABSA":
     st.title("📏 Step 3: Rule-Based Aspect Analysis")
+    
+    # academic diagram
+    st.markdown("""
+        <div style="display: flex; justify-content: space-around; align-items: center; background: #1e2130; padding: 20px; border-radius: 15px; margin-bottom: 30px;">
+            <div style="text-align: center;"><div style="background: #3b82f6; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto;">A</div><b>Aspects</b></div>
+            <div style="flex: 1; height: 2px; background: #3b82f6; margin: 0 10px;"></div>
+            <div style="text-align: center;"><div style="background: #f59e0b; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto;">W</div><b>Window</b></div>
+            <div style="flex: 1; height: 2px; background: #f59e0b; margin: 0 10px;"></div>
+            <div style="text-align: center;"><div style="background: #ef4444; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto;">N</div><b>Negation</b></div>
+        </div>
+    """, unsafe_allow_html=True)
+
     st.write("Using custom logic, POS tagging, and proximity windows to link opinions to features.")
 
     st.subheader("🎯 Real-Time Rule Analysis")
@@ -256,6 +294,18 @@ elif page == "3. Rule-Based ABSA":
 # ============================================
 elif page == "4. LLM-Based ABSA":
     st.title("🔥 Step 4: Advanced LLM-Based Insights")
+    
+    # academic diagram
+    st.markdown("""
+        <div style="display: flex; justify-content: space-around; align-items: center; background: #1e2130; padding: 20px; border-radius: 15px; margin-bottom: 30px;">
+            <div style="text-align: center;"><div style="background: #ef4444; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto;">P</div><b>Prompt</b></div>
+            <div style="flex: 1; height: 2px; background: #ef4444; margin: 0 10px;"></div>
+            <div style="text-align: center;"><div style="background: #3b82f6; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto;">L3</div><b>Llama3</b></div>
+            <div style="flex: 1; height: 2px; background: #3b82f6; margin: 0 10px;"></div>
+            <div style="text-align: center;"><div style="background: #10b981; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto;">J</div><b>JSON</b></div>
+        </div>
+    """, unsafe_allow_html=True)
+
     st.write("Leveraging Llama3 to understand context, multi-word aspects, and complex sentiment patterns.")
 
     # Interactive Demo
