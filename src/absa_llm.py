@@ -169,6 +169,33 @@ def generate_business_strategy(absa_results, model_name="llama3:latest"):
         return f"Error generating strategy: {e}"
 
 # ============================================
+# FUNCTION: GENERATE BRAND REPORT
+# ============================================
+def generate_brand_report(top_positive, top_negative, model_name="llama3:latest"):
+    """
+    Generates a strategic brand perception report based on global dataset trends.
+    """
+    pos_str = ", ".join(top_positive)
+    neg_str = ", ".join(top_negative)
+    
+    prompt = (
+        f"Analyze these market trends. Customers love: {pos_str}. Customers hate: {neg_str}. "
+        "Write a short 'Brand Health Report' (max 4 lines). "
+        "Tell me: 1. Overall Brand Perception. 2. Main Satisfaction Driver. 3. Biggest Risk to Brand. "
+        "Use simple, professional language."
+    )
+
+    try:
+        response = ollama.generate(
+            model=model_name, 
+            prompt=prompt,
+            options={"num_predict": 150}
+        )
+        return response['response']
+    except Exception as e:
+        return f"Error generating report: {e}"
+
+# ============================================
 # MAIN
 # ============================================
 if __name__ == "__main__":

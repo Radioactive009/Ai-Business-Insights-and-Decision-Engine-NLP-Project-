@@ -462,43 +462,6 @@ elif page == "Executive Insights":
 # ============================================
 # SECTION: MODEL COMPARISON (VISUAL METRICS)
 # ============================================
-elif page == "Model Comparison":
-    st.title("Model Performance & Accuracy Comparison")
-    st.write("A head-to-head comparison between our custom Rule Engine and the LLM Intelligence Engine.")
-
-    # Data for Comparison
-    comparison_data = {
-        "Metric": ["Context Accuracy", "Noise Reduction", "Entity Recognition", "Speed (Low is Better)"],
-        "Rule-Based ABSA": [65, 50, 40, 5],
-        "LLM-Based ABSA": [92, 95, 90, 85]
-    }
-    df_comp = pd.DataFrame(comparison_data)
-
-    col1, col2 = st.columns([2, 1])
-
-    with col1:
-        st.subheader("Accuracy & Quality Scores")
-        # We'll use a grouped bar chart
-        st.bar_chart(df_comp.set_index("Metric")[["Rule-Based ABSA", "LLM-Based ABSA"]])
-
-    with col2:
-        st.subheader("Key Findings")
-        st.markdown("""
-        - **LLM Superiority:** The Llama3 model shows a **40% improvement** in context understanding and multi-word aspect detection.
-        - **Rule-Based Speed:** Our custom rule engine is **17x faster** than the LLM, making it ideal for high-volume, simple data.
-        - **Hallucination Control:** The latest prompt engineering has reduced LLM noise to under 5%.
-        """)
-
-    st.markdown("---")
-    
-    # Comparison Table
-    st.subheader("Feature Comparison Table")
-    st.table(pd.DataFrame({
-        "Feature": ["Handles Negation", "Multi-word Aspects", "No Neutral Noise", "Hardware Required"],
-        "Rule-Based": ["Partial (Rules)", "No", "Low", "Basic PC"],
-        "LLM-Based": ["Excellent", "Yes", "High", "GPU/Strong CPU"]
-    }))
-
 # ============================================
 # FOOTER
 # ============================================
