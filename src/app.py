@@ -433,13 +433,38 @@ elif page == "💎 Executive Insights":
             st.error("Could not generate insights. Ensure Ollama is running.")
 
     st.markdown("---")
-    st.subheader("💡 Why this is important for Business?")
-    st.write("""
-    Raw sentiment is just data. **Executive Insights** transform that data into a roadmap:
-    - **Product Development:** Know exactly what to fix in the next version.
-    - **Marketing:** Highlight the features people actually love.
-    - **Pricing:** Understand if your customers feel they are getting value for money.
-    """)
+    st.subheader("📊 Strategic Insights from Dataset")
+    st.write("Pick any real review from your dataset to generate a business strategy.")
+    
+    try:
+        df = load_data()
+        if df is not None:
+            # PAGINATION CONTROL
+            page_size_exec = 5
+            total_pages_exec = len(df) // page_size_exec
+            page_num_exec = st.number_input("Select Dataset Page (Executive):", 1, min(total_pages_exec, 100), 1)
+            
+            start_idx_exec = (page_num_exec - 1) * page_size_exec
+            end_idx_exec = start_idx_exec + page_size_exec
+            exec_sample = df.iloc[start_idx_exec:end_idx_exec]
+            
+            for i, row in exec_sample.iterrows():
+                text = row["clean_text"]
+                with st.expander(f"Review {i+1}: {text[:60]}...", expanded=False):
+                    st.info(text)
+                    if st.button(f"Analyze Review {i+1}", key=f"btn_{i}"):
+                        with st.spinner("AI Strategist thinking..."):
+                            absa = absa_llm(text)
+                            strat = generate_business_strategy(absa)
+                            st.markdown("#### **Findings:**")
+                            st.write(absa)
+                            st.success(strat)
+        else:
+            st.warning("Dataset not found.")
+    except Exception as e:
+        st.error(f"Error loading executive data: {e}")
+
+    st.markdown("---")
 
 # ============================================
 # SECTION: MODEL COMPARISON (VISUAL METRICS)
