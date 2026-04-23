@@ -138,6 +138,32 @@ def run_on_dataset():
 
 
 # ============================================
+# FUNCTION: GENERATE BUSINESS STRATEGY
+# ============================================
+def generate_business_strategy(absa_results, model_name="llama3:latest"):
+    """
+    Takes structured ABSA results and generates high-level business strategy.
+    """
+    if not absa_results:
+        return "No data available to generate strategy."
+
+    # Format the results for the prompt
+    data_summary = json.dumps(absa_results)
+    
+    prompt = (
+        f"You are a Senior Business Strategist. Based on these aspect-based sentiment results: {data_summary}, "
+        "generate 3 short, actionable business recommendations. "
+        "If a feature is positive, suggest how to leverage it. If negative, suggest a fix. "
+        "Keep each recommendation to one sentence. No preamble. Just the list."
+    )
+
+    try:
+        response = ollama.generate(model=model_name, prompt=prompt)
+        return response['response']
+    except Exception as e:
+        return f"Error generating strategy: {e}"
+
+# ============================================
 # MAIN
 # ============================================
 if __name__ == "__main__":

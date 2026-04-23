@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import os
 import re
-from absa_llm import absa_llm
+from absa_llm import absa_llm, generate_business_strategy
 from absa import absa_from_pos
 from preprocessing import tokenize, pos_tagger, ner_tagger, remove_stopwords, lemmatize
 from sentiment_model import predict_logit
@@ -63,7 +63,7 @@ def read_code(filename):
 st.sidebar.title("🚀 Project Pipeline")
 page = st.sidebar.radio(
     "Navigation:",
-    ["Dashboard Overview", "1. Preprocessing", "2. Logistic Regression (Baseline)", "3. BERT Model (Deep Learning)", "4. Rule-Based ABSA", "5. LLM-Based ABSA", "📊 Model Comparison"],
+    ["Dashboard Overview", "1. Preprocessing", "2. Logistic Regression (Baseline)", "3. BERT Model (Deep Learning)", "4. Rule-Based ABSA", "5. LLM-Based ABSA", "💎 Executive Insights", "📊 Model Comparison"],
     key="nav_radio"
 )
 
@@ -256,6 +256,42 @@ elif page == "3. BERT Model (Deep Learning)":
             st.info(f"BERT Prediction: {res.upper()}")
 
     st.markdown("---")
+    st.subheader("📊 BERT Performance on Dataset")
+    st.write("Browse the dataset to see how the Transformer model classifies real reviews.")
+    
+    try:
+        df = load_data()
+        if df is not None:
+            # PAGINATION CONTROL
+            st.markdown("### 📑 Browse BERT Data")
+            page_size_bert = 5
+            total_pages_bert = len(df) // page_size_bert
+            page_num_bert = st.number_input("Select BERT Page:", 1, min(total_pages_bert, 100), 1)
+            
+            start_idx_bert = (page_num_bert - 1) * page_size_bert
+            end_idx_bert = start_idx_bert + page_size_bert
+            
+            bert_sample = df.iloc[start_idx_bert:end_idx_bert]
+            
+            if st.button("Run BERT on this Page"):
+                with st.spinner("BERT analyzing 5 reviews..."):
+                    results = []
+                    for text in bert_sample["clean_text"]:
+                        results.append(predict_bert(text).upper())
+                    
+                    display_df = pd.DataFrame({
+                        "Review Text": bert_sample["clean_text"].tolist(),
+                        "BERT Label": results
+                    })
+                    st.table(display_df)
+            else:
+                st.info("Click the button above to run BERT on these 5 reviews.")
+        else:
+            st.warning("Dataset not found.")
+    except Exception as e:
+        st.error(f"Error loading BERT samples: {e}")
+
+    st.markdown("---")
     st.subheader("📝 Comparative Insight")
     st.info("While Logistic Regression relies on word counts, BERT understands the 'vibe' and context of the entire sentence.")
 
@@ -360,6 +396,50 @@ elif page == "5. LLM-Based ABSA":
 elif page == "📊 Model Comparison":
     st.title("📊 Model Performance & Accuracy Comparison")
     # ... rest of comparison code ...
+
+# ============================================
+# SECTION: 💎 EXECUTIVE INSIGHTS
+# ============================================
+elif page == "💎 Executive Insights":
+    st.title("💎 Executive Intelligence & Strategic Advice")
+    st.write("This section turns NLP results into actionable business decisions using Llama3.")
+
+    st.subheader("🚀 Strategic Decision Simulator")
+    exec_review = st.text_area("Input customer feedback for strategic analysis:", 
+                             "The camera quality is breathtaking, but the battery drains in just 2 hours. Also, the price is quite high for these specs.")
+
+    if st.button("Generate Strategic Advice"):
+        with st.spinner("AI Consultant analyzing market impact..."):
+            # Step 1: Get ABSA
+            absa_results = absa_llm(exec_review)
+            # Step 2: Get Strategic Advice
+            strategy = generate_business_strategy(absa_results)
+            
+        if absa_results and strategy:
+            col1, col2 = st.columns([1, 1])
+            
+            with col1:
+                st.markdown("### **1. Feature Analysis**")
+                for aspect, sentiment in absa_results.items():
+                    color = "#28a745" if sentiment.lower() == "positive" else "#dc3545"
+                    st.markdown(f"**{aspect.upper()}**: <span style='color:{color}'>{sentiment.upper()}</span>", unsafe_allow_html=True)
+            
+            with col2:
+                st.markdown("### **2. Strategic Advice**")
+                st.success(strategy)
+                
+            st.info("💡 **Executive Summary:** Focus on maintaining the quality of high-performing features while urgently addressing the pain points identified above.")
+        else:
+            st.error("Could not generate insights. Ensure Ollama is running.")
+
+    st.markdown("---")
+    st.subheader("💡 Why this is important for Business?")
+    st.write("""
+    Raw sentiment is just data. **Executive Insights** transform that data into a roadmap:
+    - **Product Development:** Know exactly what to fix in the next version.
+    - **Marketing:** Highlight the features people actually love.
+    - **Pricing:** Understand if your customers feel they are getting value for money.
+    """)
 
 # ============================================
 # SECTION: MODEL COMPARISON (VISUAL METRICS)
