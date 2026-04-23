@@ -1,4 +1,4 @@
-# 🧠 AI Customer Intelligence & Decision Engine
+# AI Customer Intelligence & Decision Engine
 
 [![Python](https://img.shields.io/badge/Python-3.9+-blue.svg)](https://www.python.org/)
 [![Streamlit](https://img.shields.io/badge/Streamlit-High--End-red.svg)](https://streamlit.io/)
@@ -11,19 +11,19 @@ This repository contains a state-of-the-art **Natural Language Processing (NLP)*
 
 ---
 
-## 🚀 Key Features
+## Key Features
 
-- **💎 Executive Intelligence:** Powered by **Llama3**, it generates 3-point action plans based on real customer pain points.
-- **🤖 Hybrid Sentiment Engine:** Uses a dual-model approach:
+- ** Executive Intelligence:** Powered by **Llama3**, it generates 3-point action plans based on real customer pain points.
+- ** Hybrid Sentiment Engine:** Uses a dual-model approach:
   - **Logistic Regression** for high-speed statistical classification (~5ms/token).
   - **BERT (Transformer)** for deep contextual understanding of sarcasm and complex emotions.
-- **📊 Granular ABSA:** Aspect-Based Sentiment Analysis that tracks sentiment for specific features like *Battery, Camera, Price, and Screen*.
-- **🔍 Professional Preprocessing:** A complete pipeline featuring Tokenization, Stopword Removal, and custom Rule-Based Lemmatization.
-- **📈 Global Trend Analytics:** Aggregates feedback from the entire dataset to generate **Strategic Brand Perception Reports**.
+- ** Granular ABSA:** Aspect-Based Sentiment Analysis that tracks sentiment for specific features like *Battery, Camera, Price, and Screen*.
+- ** Professional Preprocessing:** A complete pipeline featuring Tokenization, Stopword Removal, and custom Rule-Based Lemmatization.
+- ** Global Trend Analytics:** Aggregates feedback from the entire dataset to generate **Strategic Brand Perception Reports**.
 
 ---
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 - **Frontend:** Streamlit (Custom Dark-Mode UI)
 - **NLP Libraries:** Scikit-Learn, Transformers (HuggingFace), Regex
@@ -33,7 +33,7 @@ This repository contains a state-of-the-art **Natural Language Processing (NLP)*
 
 ---
 
-## 🏗️ Architecture Pipeline
+##  Architecture Pipeline
 
 1. **Preprocessing:** Clean and structure raw text.
 2. **Sentiment Logic:** Classify general "vibe" (Logit vs. BERT).
@@ -43,7 +43,7 @@ This repository contains a state-of-the-art **Natural Language Processing (NLP)*
 
 ---
 
-## 📦 Installation & Setup
+##  Installation & Setup
 
 1. **Clone the Repo:**
    ```bash
@@ -69,15 +69,15 @@ This repository contains a state-of-the-art **Natural Language Processing (NLP)*
 
 ---
 
-## 📄 Documentation
+##  Documentation
 For a deep dive into the math, logic, and implementation details, check out the [Detailed Project Report](./Detailed_Project_Report.md).
 
 ---
 
-## 🤝 Contributing
+##  Contributing
 Contributions are welcome! Feel free to open an issue or submit a pull request.
 
-## 📜 License
+##  License
 This project is licensed under the MIT License.
 
 ---
