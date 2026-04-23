@@ -151,14 +151,19 @@ def generate_business_strategy(absa_results, model_name="llama3:latest"):
     data_summary = json.dumps(absa_results)
     
     prompt = (
-        f"You are a Senior Business Strategist. Based on these aspect-based sentiment results: {data_summary}, "
-        "generate 3 short, actionable business recommendations. "
-        "If a feature is positive, suggest how to leverage it. If negative, suggest a fix. "
-        "Keep each recommendation to one sentence. No preamble. Just the list."
+        f"Based on these results: {data_summary}, give 3 very short, simple tips for the business owner. "
+        "Use easy language (no big business words). "
+        "Example: 'People love the camera, keep it up!' or 'Battery is bad, fix it fast.' "
+        "Just the 3 tips, very short, one per line."
     )
 
     try:
-        response = ollama.generate(model=model_name, prompt=prompt)
+        # Using options to speed up generation by limiting tokens
+        response = ollama.generate(
+            model=model_name, 
+            prompt=prompt,
+            options={"num_predict": 100, "temperature": 0.5}
+        )
         return response['response']
     except Exception as e:
         return f"Error generating strategy: {e}"
