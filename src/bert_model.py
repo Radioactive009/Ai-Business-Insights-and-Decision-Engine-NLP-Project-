@@ -27,36 +27,47 @@ classifier = pipeline(
 
 
 # ================================
-# RUN PREDICTIONS
+# PREDICTION FUNCTION
 # ================================
-# Pre-clipping text strings to avoid memory overhead and ensuring truncation is active
-results = classifier(texts, truncation=True)
-
-
-# ================================
-# FORMAT OUTPUT
-# ================================
-predictions = []
-
-for res in results:
-    label = res["label"]
-    
-    # Convert labels to match your dataset
-    if label == "POSITIVE":
-        predictions.append("positive")
-    elif label == "NEGATIVE":
-        predictions.append("negative")
-    else:
-        predictions.append("neutral")
-
-
-df["bert_sentiment"] = predictions
-
+def predict_bert(text):
+    """
+    Takes a single text input and returns the BERT sentiment label.
+    """
+    res = classifier(text, truncation=True)[0]
+    return res["label"].lower()
 
 # ================================
-# COMPARE WITH ORIGINAL
+# RUN PREDICTIONS (BATCH)
 # ================================
-from sklearn.metrics import classification_report
+if __name__ == "__main__":
+    # Pre-clipping text strings to avoid memory overhead and ensuring truncation is active
+    results = classifier(texts, truncation=True)
 
-print("\n===== BERT PERFORMANCE =====\n")
-print(classification_report(df["sentiment"], df["bert_sentiment"]))
+
+    # ================================
+    # FORMAT OUTPUT
+    # ================================
+    predictions = []
+
+    for res in results:
+        label = res["label"]
+        
+        # Convert labels to match your dataset
+        if label == "POSITIVE":
+            predictions.append("positive")
+        elif label == "NEGATIVE":
+            predictions.append("negative")
+        else:
+            predictions.append("neutral")
+
+
+    df["bert_sentiment"] = predictions
+
+
+    # ================================
+    # COMPARE WITH ORIGINAL
+    # ================================
+    from sklearn.metrics import classification_report
+
+    print("\n===== BERT PERFORMANCE =====\n")
+    print(classification_report(df["sentiment"], df["bert_sentiment"]))

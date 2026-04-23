@@ -74,5 +74,18 @@ y_pred = model.predict(X_test_vec)
 # ============================================
 # EVALUATION
 # ============================================
-print("\n===== BINARY MODEL PERFORMANCE =====\n")
-print(classification_report(y_test, y_pred))
+if __name__ == "__main__":
+    print("\n===== BINARY MODEL PERFORMANCE =====\n")
+    print(classification_report(y_test, y_pred))
+
+
+# ============================================
+# PREDICTION FUNCTION
+# ============================================
+def predict_logit(text):
+    """
+    Predicts sentiment using the trained Logistic Regression model.
+    """
+    # Transform text to same TF-IDF space
+    vec = vectorizer.transform([text])
+    return model.predict(vec)[0]

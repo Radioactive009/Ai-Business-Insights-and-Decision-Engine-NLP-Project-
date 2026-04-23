@@ -5,6 +5,8 @@ import re
 from absa_llm import absa_llm
 from absa import absa_from_pos
 from preprocessing import tokenize, pos_tagger, ner_tagger, remove_stopwords, lemmatize
+from sentiment_model import predict_logit
+from bert_model import predict_bert
 
 # ============================================
 # PAGE CONFIGURATION
@@ -61,7 +63,7 @@ def read_code(filename):
 st.sidebar.title("🚀 Project Pipeline")
 page = st.sidebar.radio(
     "Navigation:",
-    ["Dashboard Overview", "1. Preprocessing", "2. Sentiment Analysis", "3. Rule-Based ABSA", "4. LLM-Based ABSA", "📊 Model Comparison"],
+    ["Dashboard Overview", "1. Preprocessing", "2. Logistic Regression (Baseline)", "3. BERT Model (Deep Learning)", "4. Rule-Based ABSA", "5. LLM-Based ABSA", "📊 Model Comparison"],
     key="nav_radio"
 )
 
@@ -182,43 +184,35 @@ elif page == "1. Preprocessing":
         st.code(read_code("preprocessing.py"), language="python")
 
 # ============================================
-# SECTION: SENTIMENT ANALYSIS (VISUAL)
+# SECTION: 2. LOGISTIC REGRESSION (BASELINE)
 # ============================================
-elif page == "2. Sentiment Analysis":
-    st.title("📈 Step 2: Global Sentiment Classification")
+elif page == "2. Logistic Regression (Baseline)":
+    st.title("📈 Step 2: Logistic Regression (Baseline Model)")
     
-    # academic diagram
     st.markdown("""
         <div style="display: flex; justify-content: space-around; align-items: center; background: #1e2130; padding: 20px; border-radius: 15px; margin-bottom: 30px;">
             <div style="text-align: center;"><div style="background: #3b82f6; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto;">V</div><b>TF-IDF</b></div>
             <div style="flex: 1; height: 2px; background: #3b82f6; margin: 0 10px;"></div>
             <div style="text-align: center;"><div style="background: #10b981; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto;">LR</div><b>Logit Reg.</b></div>
-            <div style="flex: 1; height: 2px; background: #10b981; margin: 0 10px;"></div>
-            <div style="text-align: center;"><div style="background: #ef4444; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto;">B</div><b>BERT</b></div>
         </div>
     """, unsafe_allow_html=True)
 
-    st.write("We use Logistic Regression and BERT to determine if a review is generally Happy or Unhappy.")
+    st.write("We use **TF-IDF Vectorization** and **Logistic Regression** as our high-speed statistical baseline.")
 
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        st.markdown("<div class='pipeline-node'><b>Positive Review</b><br>'I love this product, it works perfectly!'</div>", unsafe_allow_html=True)
-        st.success("Result: POSITIVE")
-        
-    with col2:
-        st.markdown("<div class='pipeline-node' style='border-left-color: #f44336;'><b>Negative Review</b><br>'This is the worst purchase I ever made.'</div>", unsafe_allow_html=True)
-        st.error("Result: NEGATIVE")
+    st.subheader("🎯 Real-Time Prediction (Logit)")
+    logit_input = st.text_input("Enter text for Logit analysis:", "This purchase was actually great!")
+    if logit_input:
+        res = predict_logit(logit_input)
+        st.success(f"Logit Prediction: {res.upper()}")
 
     st.markdown("---")
     st.subheader("📊 Model Performance on Dataset")
-    st.write("Below are 10 reviews from our dataset processed by our sentiment classifier.")
     
     try:
         df = load_data()
         if df is not None:
             # PAGINATION CONTROL
-            st.markdown("### 📑 Browse Sentiment Data")
+            st.markdown("### 📑 Browse Logit Results")
             page_size_sent = 10
             total_pages_sent = len(df) // page_size_sent
             page_num_sent = st.number_input("Enter Page Number:", 1, total_pages_sent, 1)
@@ -227,12 +221,10 @@ elif page == "2. Sentiment Analysis":
             end_idx_sent = start_idx_sent + page_size_sent
             
             sample_df = df.iloc[start_idx_sent:end_idx_sent][["clean_text", "sentiment"]]
-            # Rename columns for display
-            sample_df.columns = ["Review Text", "Detected Sentiment"]
-            
+            sample_df.columns = ["Review Text", "Logit Label"]
             st.table(sample_df)
         else:
-            st.warning("Dataset not found for insights.")
+            st.warning("Dataset not found.")
     except Exception as e:
         st.error(f"Error loading samples: {e}")
 
@@ -241,12 +233,42 @@ elif page == "2. Sentiment Analysis":
         st.code(read_code("sentiment_model.py"), language="python")
 
 # ============================================
-# SECTION: RULE-BASED ABSA (VISUAL)
+# SECTION: 3. BERT MODEL (DEEP LEARNING)
 # ============================================
-elif page == "3. Rule-Based ABSA":
-    st.title("📏 Step 3: Rule-Based Aspect Analysis")
+elif page == "3. BERT Model (Deep Learning)":
+    st.title("🤖 Step 3: BERT Transformer Model")
     
-    # academic diagram
+    st.markdown("""
+        <div style="display: flex; justify-content: space-around; align-items: center; background: #1e2130; padding: 20px; border-radius: 15px; margin-bottom: 30px;">
+            <div style="text-align: center;"><div style="background: #ef4444; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto;">T</div><b>Transformer</b></div>
+            <div style="flex: 1; height: 2px; background: #ef4444; margin: 0 10px;"></div>
+            <div style="text-align: center;"><div style="background: #3b82f6; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto;">B</div><b>BERT</b></div>
+        </div>
+    """, unsafe_allow_html=True)
+
+    st.write("Using **DistilBERT**, we achieve deep contextual understanding of customer emotions.")
+
+    st.subheader("🎯 Real-Time BERT Analysis")
+    bert_input = st.text_input("Enter text for BERT analysis:", "The delivery was late, but the item is high quality.")
+    if bert_input:
+        with st.spinner("BERT is thinking..."):
+            res = predict_bert(bert_input)
+            st.info(f"BERT Prediction: {res.upper()}")
+
+    st.markdown("---")
+    st.subheader("📝 Comparative Insight")
+    st.info("While Logistic Regression relies on word counts, BERT understands the 'vibe' and context of the entire sentence.")
+
+    st.markdown("---")
+    with st.expander("View BERT Implementation (bert_model.py)"):
+        st.code(read_code("bert_model.py"), language="python")
+
+# ============================================
+# SECTION: 4. RULE-BASED ABSA
+# ============================================
+elif page == "4. Rule-Based ABSA":
+    st.title("📏 Step 4: Rule-Based Aspect Analysis")
+    
     st.markdown("""
         <div style="display: flex; justify-content: space-around; align-items: center; background: #1e2130; padding: 20px; border-radius: 15px; margin-bottom: 30px;">
             <div style="text-align: center;"><div style="background: #3b82f6; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto;">A</div><b>Aspects</b></div>
@@ -264,10 +286,8 @@ elif page == "3. Rule-Based ABSA":
     
     if st.button("Run Rule Engine"):
         with st.spinner("Processing tags and distance..."):
-            # 1. Tokenize & Tag
             tokens = tokenize(rule_input)
             tags = pos_tagger(tokens)
-            # 2. Run ABSA
             result = absa_from_pos(tags)
             
         if result:
@@ -283,19 +303,18 @@ elif page == "3. Rule-Based ABSA":
                         </div>
                     """, unsafe_allow_html=True)
         else:
-            st.warning("No aspects with clear sentiments were found using the rule-based window.")
+            st.warning("No aspects found.")
 
     st.markdown("---")
     with st.expander("View Rule Logic (absa.py)"):
         st.code(read_code("absa.py"), language="python")
 
 # ============================================
-# SECTION: LLM-BASED ABSA (VISUAL & INTERACTIVE)
+# SECTION: 5. LLM-BASED ABSA
 # ============================================
-elif page == "4. LLM-Based ABSA":
-    st.title("🔥 Step 4: Advanced LLM-Based Insights")
+elif page == "5. LLM-Based ABSA":
+    st.title("🔥 Step 5: Advanced LLM-Based Insights")
     
-    # academic diagram
     st.markdown("""
         <div style="display: flex; justify-content: space-around; align-items: center; background: #1e2130; padding: 20px; border-radius: 15px; margin-bottom: 30px;">
             <div style="text-align: center;"><div style="background: #ef4444; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto;">P</div><b>Prompt</b></div>
@@ -306,11 +325,10 @@ elif page == "4. LLM-Based ABSA":
         </div>
     """, unsafe_allow_html=True)
 
-    st.write("Leveraging Llama3 to understand context, multi-word aspects, and complex sentiment patterns.")
+    st.write("Leveraging Llama3 to understand context and complex patterns.")
 
-    # Interactive Demo
     st.subheader("🎯 Advanced Intelligence Demo")
-    user_text = st.text_area("Type a complex review (try contrasting sentiments):", "The display is crystal clear but the shipping was very slow.")
+    user_text = st.text_area("Type a complex review:", "The display is crystal clear but the shipping was very slow.")
     
     if st.button("Generate Deep Insights"):
         with st.spinner("Llama3 analyzing context..."):
@@ -319,7 +337,6 @@ elif page == "4. LLM-Based ABSA":
         if result:
             st.write("### **Intelligence Extracted:**")
             cols = st.columns(len(result) if len(result) > 0 else 1)
-            
             for i, (aspect, sentiment) in enumerate(result.items()):
                 with cols[i % len(cols)]:
                     color = "#28a745" if sentiment.lower() == "positive" else "#dc3545"
@@ -331,11 +348,18 @@ elif page == "4. LLM-Based ABSA":
                         </div>
                     """, unsafe_allow_html=True)
         else:
-            st.error("Ollama not found. Please ensure the server is running.")
+            st.error("Ollama not found.")
 
     st.markdown("---")
     with st.expander("View LLM Logic (absa_llm.py)"):
         st.code(read_code("absa_llm.py"), language="python")
+
+# ============================================
+# SECTION: MODEL COMPARISON
+# ============================================
+elif page == "📊 Model Comparison":
+    st.title("📊 Model Performance & Accuracy Comparison")
+    # ... rest of comparison code ...
 
 # ============================================
 # SECTION: MODEL COMPARISON (VISUAL METRICS)
