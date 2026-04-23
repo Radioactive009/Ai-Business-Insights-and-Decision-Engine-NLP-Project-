@@ -37,8 +37,9 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 # ============================================
-# HELPER FUNCTIONS
+# HELPER FUNCTIONS (CACHED)
 # ============================================
+@st.cache_data
 def read_code(filename):
     try:
         with open(filename, "r", encoding="utf-8") as f:
@@ -52,7 +53,8 @@ def read_code(filename):
 st.sidebar.title("🚀 Project Pipeline")
 page = st.sidebar.radio(
     "Navigation:",
-    ["Dashboard Overview", "1. Preprocessing", "2. Sentiment Analysis", "3. Rule-Based ABSA", "4. LLM-Based ABSA", "📊 Model Comparison"]
+    ["Dashboard Overview", "1. Preprocessing", "2. Sentiment Analysis", "3. Rule-Based ABSA", "4. LLM-Based ABSA", "📊 Model Comparison"],
+    key="nav_radio"
 )
 
 st.sidebar.markdown("---")

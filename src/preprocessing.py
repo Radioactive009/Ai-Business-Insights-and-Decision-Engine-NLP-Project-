@@ -156,7 +156,11 @@ def pos_tagger(tokens):
     tagged_output = []
     
     # Expanded Rule Dictionaries
-    verbs = {"is", "am", "are", "was", "were", "be", "been", "being", "have", "has", "had", "do", "does", "did"}
+    verbs = {
+        "is", "am", "are", "was", "were", "be", "been", "being", 
+        "have", "has", "had", "do", "does", "did",
+        "eat", "read", "write", "run", "go", "going", "gone", "buy", "bought", "get", "got", "make", "made"
+    }
     determiners = {"the", "a", "an", "this", "that", "these", "those", "my", "your", "his", "her", "its", "our", "their"}
     conjunctions = {"and", "or", "but", "so", "yet", "nor", "for"}
     prepositions = {"in", "on", "at", "to", "for", "with", "by", "about", "as", "into", "through", "after", "before", "under", "over"}
@@ -171,6 +175,7 @@ def pos_tagger(tokens):
     for i, word in enumerate(tokens):
         # Strip common punctuation for cleaner suffix matching
         word_clean = word.lower().strip(".,!?;:\"'()[]")
+        prev_word = tokens[i-1].lower() if i > 0 else ""
         
         # Rule 1: Specific Lookups (Highest Priority)
         if word_clean in verbs:
@@ -190,31 +195,35 @@ def pos_tagger(tokens):
         elif word_clean.isdigit():
             tag = "NUM"
             
-        # Rule 3: Proper Nouns (Capitalized and not first word)
+        # Rule 3: Contextual Rule - "to" + word -> VERB (Infinitive)
+        elif prev_word == "to":
+            tag = "VERB"
+
+        # Rule 4: Proper Nouns (Capitalized and not first word)
         elif i > 0 and word and word[0].isupper() and word_clean not in verbs:
             tag = "PROPER_NOUN"
             
-        # Rule 4: Suffix - "ing", "ed" -> VERB
-        elif word_clean.endswith("ing") or word_clean.endswith("ed"):
+        # Rule 5: Suffix - "ing", "ed", "es", "s" (if common verb endings)
+        elif word_clean.endswith(("ing", "ed", "es")):
             tag = "VERB"
             
-        # Rule 5: Suffix - Adverbs
+        # Rule 6: Suffix - Adverbs
         elif word_clean.endswith(adv_suffixes):
             tag = "ADVERB"
             
-        # Rule 6: Suffix - Adjectives
+        # Rule 7: Suffix - Adjectives
         elif word_clean.endswith(adj_suffixes):
             tag = "ADJ"
             
-        # Rule 7: Suffix - Nouns
-        elif word_clean.endswith(noun_suffixes):
+        # Rule 8: Suffix - Nouns (including possessives like banana's)
+        elif word_clean.endswith(noun_suffixes) or word_clean.endswith("'s"):
             tag = "NOUN"
             
-        # Rule 8: Default
+        # Rule 9: Default
         else:
             # Check if it starts with a capital letter (even if first word) for Proper Noun fallback
             if word and word[0].isupper() and i == 0:
-                tag = "PROPER_NOUN" # First word capitalization is ambiguous but often a Proper Noun
+                tag = "PROPER_NOUN"
             else:
                 tag = "NOUN"
             
