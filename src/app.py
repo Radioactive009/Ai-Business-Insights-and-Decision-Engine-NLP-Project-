@@ -118,11 +118,19 @@ elif page == "1. Preprocessing":
     try:
         df = load_data()
         if df is not None:
-            # Select 3 interesting reviews for demonstration
-            examples = df["clean_text"].head(3).tolist()
+            # PAGINATION CONTROL
+            st.markdown("### 📑 Browse Dataset")
+            page_size = 5
+            total_pages = len(df) // page_size
+            page_num = st.slider("Select Page:", 1, min(total_pages, 100), 1) # Limit to first 100 pages for speed
             
-            for i, text in enumerate(examples):
-                with st.expander(f"Review Example {i+1}: {text[:60]}...", expanded=True):
+            start_idx = (page_num - 1) * page_size
+            end_idx = start_idx + page_size
+            examples = df.iloc[start_idx:end_idx]
+            
+            for i, row in examples.iterrows():
+                text = row["clean_text"]
+                with st.expander(f"Review Row {i+1}: {text[:60]}...", expanded=(i == start_idx)):
                     # Run the actual pipeline
                     tokens = tokenize(text)
                     tags = pos_tagger(tokens)
@@ -135,22 +143,16 @@ elif page == "1. Preprocessing":
                     with col1:
                         st.markdown("**Raw Review Segment:**")
                         st.info(text)
-                        
                         st.markdown("**Step 2: Stopword Removal**")
                         st.write(f"`{clean_tokens[:10]}...`")
                         
                     with col2:
                         st.markdown("**Structured Data:**")
                         st.write(f"🏷️ **Tokens:** `{tokens[:8]}...`")
-                        
-                        # Formatted POS Tags (Top 5)
                         pos_formatted = ", ".join([f"{word} ({tag})" for word, tag in tags if tag in ["NOUN", "ADJ", "PROPER_NOUN"]][:5])
                         st.write(f"📌 **Key POS Tags:** {pos_formatted}")
-                        
-                        # Formatted Entities
                         ent_formatted = ", ".join([f"{ent} ({label})" for ent, label in entities])
                         st.write(f"🏢 **Entities:** {ent_formatted if ent_formatted else 'None detected'}")
-                        
                         st.markdown("**Step 3: Lemmatization (Final Result)**")
                         st.success(" ".join(lemms))
         else:
@@ -176,11 +178,34 @@ elif page == "2. Sentiment Analysis":
     
     with col1:
         st.markdown("<div class='pipeline-node'><b>Positive Review</b><br>'I love this product, it works perfectly!'</div>", unsafe_allow_html=True)
-        st.success("Result: POSITIVE (Score: 0.98)")
+        st.success("Result: POSITIVE")
         
     with col2:
         st.markdown("<div class='pipeline-node' style='border-left-color: #f44336;'><b>Negative Review</b><br>'This is the worst purchase I ever made.'</div>", unsafe_allow_html=True)
-        st.error("Result: NEGATIVE (Score: 0.12)")
+        st.error("Result: NEGATIVE")
+
+    st.markdown("---")
+    st.subheader("📊 Model Performance on Dataset")
+    st.write("Below are 5 random reviews processed by our sentiment classifier.")
+    
+    try:
+        df = load_data()
+        if df is not None:
+            # Take a random sample of 5 reviews
+            sample_df = df.sample(5)[["clean_text", "sentiment"]]
+            # Rename columns for display
+            sample_df.columns = ["Review Text", "Detected Sentiment"]
+            
+            # Styling the sentiment column
+            def color_sentiment(val):
+                color = '#28a745' if val == 'positive' else '#dc3545'
+                return f'color: {color}; font-weight: bold'
+            
+            st.table(sample_df)
+        else:
+            st.warning("Dataset not found for insights.")
+    except Exception as e:
+        st.error(f"Error loading samples: {e}")
 
     st.markdown("---")
     with st.expander("View Training Logic (sentiment_model.py)"):
