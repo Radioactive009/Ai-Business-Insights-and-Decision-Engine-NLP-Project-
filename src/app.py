@@ -13,7 +13,7 @@ from bert_model import predict_bert
 # ============================================
 st.set_page_config(
     page_title="AI Customer Intelligence Engine",
-    page_icon="🧠",
+    page_icon=None,
     layout="wide"
 )
 
@@ -60,10 +60,10 @@ def read_code(filename):
 # ============================================
 # SIDEBAR NAVIGATION
 # ============================================
-st.sidebar.title("🚀 Project Pipeline")
+st.sidebar.title("Project Pipeline")
 page = st.sidebar.radio(
     "Navigation:",
-    ["Dashboard Overview", "1. Preprocessing", "2. Logistic Regression (Baseline)", "3. BERT Model (Deep Learning)", "4. Rule-Based ABSA", "5. LLM-Based ABSA", "💎 Executive Insights", "📊 Model Comparison"],
+    ["Dashboard Overview", "1. Preprocessing", "2. Logistic Regression (Baseline)", "3. BERT Model (Deep Learning)", "4. Rule-Based ABSA", "5. LLM-Based ABSA", "Executive Insights"],
     key="nav_radio"
 )
 
@@ -75,7 +75,7 @@ st.sidebar.info("Dataset: Amazon Electronics")
 # SECTION: DASHBOARD OVERVIEW
 # ============================================
 if page == "Dashboard Overview":
-    st.title("🧠 AI Customer Intelligence & Decision Engine")
+    st.title("AI Customer Intelligence & Decision Engine")
     st.markdown("### The Complete NLP Intelligence Pipeline")
     
     # Visual Flowchart using Graphviz
@@ -104,17 +104,17 @@ if page == "Dashboard Overview":
         st.metric(label="LLM Accuracy", value="High", delta="Context Aware")
 
     st.markdown("---")
-    st.subheader("📋 Executive Summary")
+    st.subheader("Executive Summary")
     st.write("""
     This project automates the analysis of customer feedback. Instead of reading thousands of reviews, 
-    the engine extracts **what** customers are talking about (Aspects) and **how** they feel about them (Sentiment).
+    the engine extracts what customers are talking about (Aspects) and how they feel about them (Sentiment).
     """)
 
 # ============================================
 # SECTION: 1. Preprocessing (DATASET EXAMPLES)
 # ============================================
 elif page == "1. Preprocessing":
-    st.title("🔍 Step 1: Preprocessing & Tagging")
+    st.title("Step 1: Preprocessing & Tagging")
     
     # academic diagram
     st.markdown("""
@@ -135,7 +135,7 @@ elif page == "1. Preprocessing":
         df = load_data()
         if df is not None:
             # PAGINATION CONTROL
-            st.markdown("### 📑 Browse Dataset")
+            st.markdown("### Browse Dataset")
             page_size = 5
             total_pages = len(df) // page_size
             page_num = st.slider("Select Page:", 1, min(total_pages, 100), 1) # Limit to first 100 pages for speed
@@ -164,11 +164,11 @@ elif page == "1. Preprocessing":
                         
                     with col2:
                         st.markdown("**Structured Data:**")
-                        st.write(f"🏷️ **Tokens:** `{tokens[:8]}...`")
+                        st.write(f"Tokens: `{tokens[:8]}...`")
                         pos_formatted = ", ".join([f"{word} ({tag})" for word, tag in tags if tag in ["NOUN", "ADJ", "PROPER_NOUN"]][:5])
-                        st.write(f"📌 **Key POS Tags:** {pos_formatted}")
+                        st.write(f"Key POS Tags: {pos_formatted}")
                         ent_formatted = ", ".join([f"{ent} ({label})" for ent, label in entities])
-                        st.write(f"🏢 **Entities:** {ent_formatted if ent_formatted else 'None detected'}")
+                        st.write(f"Entities: {ent_formatted if ent_formatted else 'None detected'}")
                         st.markdown("**Step 3: Lemmatization (Final Result)**")
                         st.success(" ".join(lemms))
         else:
@@ -177,8 +177,8 @@ elif page == "1. Preprocessing":
         st.error(f"Error processing samples: {e}")
 
     st.markdown("---")
-    st.subheader("💡 Why this matters?")
-    st.write("By identifying **NOUNS**, our system knows that 'battery' is a feature. By identifying **ADJECTIVES**, it knows 'great' is an opinion.")
+    st.subheader("Why this matters?")
+    st.write("By identifying NOUNS, our system knows that 'battery' is a feature. By identifying ADJECTIVES, it knows 'great' is an opinion.")
     
     with st.expander("View Implementation (preprocessing.py)"):
         st.code(read_code("preprocessing.py"), language="python")
@@ -187,7 +187,7 @@ elif page == "1. Preprocessing":
 # SECTION: 2. LOGISTIC REGRESSION (BASELINE)
 # ============================================
 elif page == "2. Logistic Regression (Baseline)":
-    st.title("📈 Step 2: Logistic Regression (Baseline Model)")
+    st.title("Step 2: Logistic Regression (Baseline Model)")
     
     st.markdown("""
         <div style="display: flex; justify-content: space-around; align-items: center; background: #1e2130; padding: 20px; border-radius: 15px; margin-bottom: 30px;">
@@ -197,22 +197,22 @@ elif page == "2. Logistic Regression (Baseline)":
         </div>
     """, unsafe_allow_html=True)
 
-    st.write("We use **TF-IDF Vectorization** and **Logistic Regression** as our high-speed statistical baseline.")
+    st.write("We use TF-IDF Vectorization and Logistic Regression as our high-speed statistical baseline.")
 
-    st.subheader("🎯 Real-Time Prediction (Logit)")
+    st.subheader("Real-Time Prediction (Logit)")
     logit_input = st.text_input("Enter text for Logit analysis:", "This purchase was actually great!")
     if logit_input:
         res = predict_logit(logit_input)
         st.success(f"Logit Prediction: {res.upper()}")
 
     st.markdown("---")
-    st.subheader("📊 Model Performance on Dataset")
+    st.subheader("Model Performance on Dataset")
     
     try:
         df = load_data()
         if df is not None:
             # PAGINATION CONTROL
-            st.markdown("### 📑 Browse Logit Results")
+            st.markdown("### Browse Logit Results")
             page_size_sent = 10
             total_pages_sent = len(df) // page_size_sent
             page_num_sent = st.number_input("Enter Page Number:", 1, total_pages_sent, 1)
@@ -236,7 +236,7 @@ elif page == "2. Logistic Regression (Baseline)":
 # SECTION: 3. BERT MODEL (DEEP LEARNING)
 # ============================================
 elif page == "3. BERT Model (Deep Learning)":
-    st.title("🤖 Step 3: BERT Transformer Model")
+    st.title("Step 3: BERT Transformer Model")
     
     st.markdown("""
         <div style="display: flex; justify-content: space-around; align-items: center; background: #1e2130; padding: 20px; border-radius: 15px; margin-bottom: 30px;">
@@ -246,9 +246,9 @@ elif page == "3. BERT Model (Deep Learning)":
         </div>
     """, unsafe_allow_html=True)
 
-    st.write("Using **DistilBERT**, we achieve deep contextual understanding of customer emotions.")
+    st.write("Using DistilBERT, we achieve deep contextual understanding of customer emotions.")
 
-    st.subheader("🎯 Real-Time BERT Analysis")
+    st.subheader("Real-Time BERT Analysis")
     bert_input = st.text_input("Enter text for BERT analysis:", "The delivery was late, but the item is high quality.")
     if bert_input:
         with st.spinner("BERT is thinking..."):
@@ -256,14 +256,14 @@ elif page == "3. BERT Model (Deep Learning)":
             st.info(f"BERT Prediction: {res.upper()}")
 
     st.markdown("---")
-    st.subheader("📊 BERT Performance on Dataset")
+    st.subheader("BERT Performance on Dataset")
     st.write("Browse the dataset to see how the Transformer model classifies real reviews.")
     
     try:
         df = load_data()
         if df is not None:
             # PAGINATION CONTROL
-            st.markdown("### 📑 Browse BERT Data")
+            st.markdown("### Browse BERT Data")
             page_size_bert = 5
             total_pages_bert = len(df) // page_size_bert
             page_num_bert = st.number_input("Select BERT Page:", 1, min(total_pages_bert, 100), 1)
@@ -292,7 +292,7 @@ elif page == "3. BERT Model (Deep Learning)":
         st.error(f"Error loading BERT samples: {e}")
 
     st.markdown("---")
-    st.subheader("📝 Comparative Insight")
+    st.subheader("Comparative Insight")
     st.info("While Logistic Regression relies on word counts, BERT understands the 'vibe' and context of the entire sentence.")
 
     st.markdown("---")
@@ -303,7 +303,7 @@ elif page == "3. BERT Model (Deep Learning)":
 # SECTION: 4. RULE-BASED ABSA
 # ============================================
 elif page == "4. Rule-Based ABSA":
-    st.title("📏 Step 4: Rule-Based Aspect Analysis")
+    st.title("Step 4: Rule-Based Aspect Analysis")
     
     st.markdown("""
         <div style="display: flex; justify-content: space-around; align-items: center; background: #1e2130; padding: 20px; border-radius: 15px; margin-bottom: 30px;">
@@ -317,7 +317,7 @@ elif page == "4. Rule-Based ABSA":
 
     st.write("Using custom logic, POS tagging, and proximity windows to link opinions to features.")
 
-    st.subheader("🎯 Real-Time Rule Analysis")
+    st.subheader("Real-Time Rule Analysis")
     rule_input = st.text_area("Enter a review for rule-based matching:", "The camera is good but the battery life is bad.")
     
     if st.button("Run Rule Engine"):
@@ -349,7 +349,7 @@ elif page == "4. Rule-Based ABSA":
 # SECTION: 5. LLM-BASED ABSA
 # ============================================
 elif page == "5. LLM-Based ABSA":
-    st.title("🔥 Step 5: Advanced LLM-Based Insights")
+    st.title("Step 5: Advanced LLM-Based Insights")
     
     st.markdown("""
         <div style="display: flex; justify-content: space-around; align-items: center; background: #1e2130; padding: 20px; border-radius: 15px; margin-bottom: 30px;">
@@ -363,7 +363,7 @@ elif page == "5. LLM-Based ABSA":
 
     st.write("Leveraging Llama3 to understand context and complex patterns.")
 
-    st.subheader("🎯 Advanced Intelligence Demo")
+    st.subheader("Advanced Intelligence Demo")
     user_text = st.text_area("Type a complex review:", "The display is crystal clear but the shipping was very slow.")
     
     if st.button("Generate Deep Insights"):
@@ -371,7 +371,7 @@ elif page == "5. LLM-Based ABSA":
             result = absa_llm(user_text)
             
         if result:
-            st.write("### **Intelligence Extracted:**")
+            st.write("### Intelligence Extracted:")
             cols = st.columns(len(result) if len(result) > 0 else 1)
             for i, (aspect, sentiment) in enumerate(result.items()):
                 with cols[i % len(cols)]:
@@ -391,20 +391,13 @@ elif page == "5. LLM-Based ABSA":
         st.code(read_code("absa_llm.py"), language="python")
 
 # ============================================
-# SECTION: MODEL COMPARISON
+# SECTION: Executive Insights
 # ============================================
-elif page == "📊 Model Comparison":
-    st.title("📊 Model Performance & Accuracy Comparison")
-    # ... rest of comparison code ...
-
-# ============================================
-# SECTION: 💎 EXECUTIVE INSIGHTS
-# ============================================
-elif page == "💎 Executive Insights":
-    st.title("💎 Executive Intelligence & Strategic Advice")
+elif page == "Executive Insights":
+    st.title("Executive Intelligence & Strategic Advice")
     st.write("This section turns NLP results into actionable business decisions using Llama3.")
 
-    st.subheader("🚀 Strategic Decision Simulator")
+    st.subheader("Strategic Decision Simulator")
     exec_review = st.text_area("Input customer feedback for strategic analysis:", 
                              "The camera quality is breathtaking, but the battery drains in just 2 hours. Also, the price is quite high for these specs.")
 
@@ -428,12 +421,12 @@ elif page == "💎 Executive Insights":
                 st.markdown("### **2. Strategic Advice**")
                 st.success(strategy)
                 
-            st.info("💡 **Executive Summary:** Focus on maintaining the quality of high-performing features while urgently addressing the pain points identified above.")
+            st.info("Executive Summary: Focus on maintaining the quality of high-performing features while urgently addressing the pain points identified above.")
         else:
             st.error("Could not generate insights. Ensure Ollama is running.")
 
     st.markdown("---")
-    st.subheader("📊 Strategic Insights from Dataset")
+    st.subheader("Strategic Insights from Dataset")
     st.write("Pick any real review from your dataset to generate a business strategy.")
     
     try:
@@ -456,7 +449,7 @@ elif page == "💎 Executive Insights":
                         with st.spinner("AI Strategist thinking..."):
                             absa = absa_llm(text)
                             strat = generate_business_strategy(absa)
-                            st.markdown("#### **Findings:**")
+                            st.markdown("#### Findings:")
                             st.write(absa)
                             st.success(strat)
         else:
@@ -469,8 +462,8 @@ elif page == "💎 Executive Insights":
 # ============================================
 # SECTION: MODEL COMPARISON (VISUAL METRICS)
 # ============================================
-elif page == "📊 Model Comparison":
-    st.title("📊 Model Performance & Accuracy Comparison")
+elif page == "Model Comparison":
+    st.title("Model Performance & Accuracy Comparison")
     st.write("A head-to-head comparison between our custom Rule Engine and the LLM Intelligence Engine.")
 
     # Data for Comparison
@@ -484,12 +477,12 @@ elif page == "📊 Model Comparison":
     col1, col2 = st.columns([2, 1])
 
     with col1:
-        st.subheader("📈 Accuracy & Quality Scores")
+        st.subheader("Accuracy & Quality Scores")
         # We'll use a grouped bar chart
         st.bar_chart(df_comp.set_index("Metric")[["Rule-Based ABSA", "LLM-Based ABSA"]])
 
     with col2:
-        st.subheader("📝 Key Findings")
+        st.subheader("Key Findings")
         st.markdown("""
         - **LLM Superiority:** The Llama3 model shows a **40% improvement** in context understanding and multi-word aspect detection.
         - **Rule-Based Speed:** Our custom rule engine is **17x faster** than the LLM, making it ideal for high-volume, simple data.
@@ -499,11 +492,11 @@ elif page == "📊 Model Comparison":
     st.markdown("---")
     
     # Comparison Table
-    st.subheader("📋 Feature Comparison Table")
+    st.subheader("Feature Comparison Table")
     st.table(pd.DataFrame({
         "Feature": ["Handles Negation", "Multi-word Aspects", "No Neutral Noise", "Hardware Required"],
-        "Rule-Based": ["✅ Partial (Rules)", "❌ No", "⚠️ Low", "💻 Basic PC"],
-        "LLM-Based": ["✅ Excellent", "✅ Yes", "✅ High", "🚀 GPU/Strong CPU"]
+        "Rule-Based": ["Partial (Rules)", "No", "Low", "Basic PC"],
+        "LLM-Based": ["Excellent", "Yes", "High", "GPU/Strong CPU"]
     }))
 
 # ============================================
