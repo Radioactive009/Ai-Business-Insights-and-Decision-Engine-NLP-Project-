@@ -4,7 +4,7 @@ import os
 import re
 from absa_llm import absa_llm
 from absa import absa_from_pos
-from preprocessing import tokenize, pos_tagger
+from preprocessing import tokenize, pos_tagger, ner_tagger
 
 # ============================================
 # PAGE CONFIGURATION
