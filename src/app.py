@@ -99,26 +99,41 @@ if page == "Dashboard Overview":
     """)
 
 # ============================================
-# SECTION: PREPROCESSING (VISUAL)
+# SECTION: 1. Preprocessing (INTERACTIVE)
 # ============================================
 elif page == "1. Preprocessing":
     st.title("🔍 Step 1: Preprocessing & Tagging")
     st.write("Before analysis, we must break down the raw text into structured components.")
 
-    example_input = "Samsung's battery life is great in London."
+    st.markdown("### **Custom Input Analysis**")
+    user_prep_input = st.text_input("Enter a sentence to see the NLP pipeline in action:", "Samsung's battery life is great in London.")
     
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        st.markdown("### **Input (Raw)**")
-        st.info(example_input)
-        
-    with col2:
-        st.markdown("### **Output (Structured)**")
-        st.write("---")
-        st.write("**Tokens:** `['Samsung', \"'s\", 'battery', 'life', 'is', 'great', 'in', 'London']` ")
-        st.write("**POS Tags:** `Samsung (PROPER_NOUN), battery (NOUN), great (ADJ)`")
-        st.write("**Entities:** `Samsung (ORG), London (LOC)`")
+    if user_prep_input:
+        with st.container():
+            # Run the actual pipeline
+            tokens = tokenize(user_prep_input)
+            tags = pos_tagger(tokens)
+            entities = ner_tagger(tokens)
+            
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                st.markdown("#### **Input (Raw)**")
+                st.info(user_prep_input)
+                
+            with col2:
+                st.markdown("#### **Output (Structured)**")
+                st.write("---")
+                # Visualization of results
+                st.write(f"**Tokens:** `{tokens}`")
+                
+                # Formatted POS Tags
+                pos_formatted = ", ".join([f"{word} ({tag})" for word, tag in tags if tag in ["NOUN", "ADJ", "PROPER_NOUN"]])
+                st.write(f"**Key POS Tags:** {pos_formatted if pos_formatted else 'No key tags found'}")
+                
+                # Formatted Entities
+                ent_formatted = ", ".join([f"{ent} ({label})" for ent, label in entities])
+                st.write(f"**Entities:** {ent_formatted if ent_formatted else 'No entities detected'}")
 
     st.markdown("---")
     st.subheader("💡 Why this matters?")
