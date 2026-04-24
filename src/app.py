@@ -63,7 +63,7 @@ def read_code(filename):
 st.sidebar.title("Project Pipeline")
 page = st.sidebar.radio(
     "Navigation:",
-    ["Dashboard Overview", "1. Preprocessing", "2. Logistic Regression (Baseline)", "3. BERT Model (Deep Learning)", "4. Rule-Based ABSA", "5. LLM-Based ABSA", "Executive Insights"],
+    ["Dashboard Overview", "1. Preprocessing", "2. Logistic Regression (Baseline)", "3. BERT Model (Deep Learning)", "4. Rule-Based ABSA", "5. LLM-Based ABSA", "Executive Insights", "Model Evaluation (ROC/AUC)"],
     key="nav_radio"
 )
 
@@ -501,7 +501,117 @@ elif page == "Executive Insights":
     st.markdown("---")
 
 # ============================================
-# SECTION: MODEL COMPARISON (VISUAL METRICS)
+# SECTION: MODEL EVALUATION (ROC/AUC)
+# ============================================
+elif page == "Model Evaluation (ROC/AUC)":
+    st.title("Model Comparison: ROC & AUC Analysis")
+    st.write("Comparing the performance of Rule-Based vs. LLM-Based ABSA in predicting overall review sentiment.")
+
+    from sklearn.metrics import roc_curve, auc
+    import plotly.graph_objects as go
+    import ast
+
+    st.markdown("""
+        <div style="background: #1e2130; padding: 20px; border-radius: 15px; margin-bottom: 30px;">
+            <h4>Why ROC & AUC?</h4>
+            <p>The <b>Receiver Operating Characteristic (ROC)</b> curve shows the trade-off between sensitivity and specificity. 
+            The <b>Area Under the Curve (AUC)</b> measures the overall ability of the model to distinguish between positive and negative classes.</p>
+        </div>
+    """, unsafe_allow_html=True)
+
+    sample_size = st.slider("Select Sample Size for Evaluation:", 10, 50, 20)
+    
+    if st.button("Run Comparative Evaluation"):
+        df = load_data()
+        if df is not None:
+            # Take a balanced sample if possible
+            pos_sample = df[df["sentiment"] == "positive"].head(sample_size // 2)
+            neg_sample = df[df["sentiment"] == "negative"].head(sample_size // 2)
+            eval_df = pd.concat([pos_sample, neg_sample]).sample(frac=1).reset_index(drop=True)
+            
+            y_true = eval_df["sentiment"].map({"positive": 1, "negative": 0}).tolist()
+            
+            rule_scores = []
+            llm_scores = []
+            
+            progress_bar = st.progress(0)
+            status_text = st.empty()
+            
+            for i, row in eval_df.iterrows():
+                status_text.text(f"Processing review {i+1}/{len(eval_df)}...")
+                
+                # 1. Rule-Based ABSA
+                try:
+                    # Convert string representation of list back to list
+                    tags = ast.literal_eval(row["pos_tags"])
+                    rule_res = absa_from_pos(tags)
+                    # Calculate score: pos/(pos+neg)
+                    pos_count = sum(1 for s in rule_res.values() if s == "positive")
+                    total = len(rule_res)
+                    rule_scores.append(pos_count / total if total > 0 else 0.5)
+                except:
+                    rule_scores.append(0.5)
+                
+                # 2. LLM-Based ABSA
+                try:
+                    llm_res = absa_llm(row["clean_text"])
+                    pos_count = sum(1 for s in llm_res.values() if s == "positive")
+                    total = len(llm_res)
+                    llm_scores.append(pos_count / total if total > 0 else 0.5)
+                except:
+                    llm_scores.append(0.5)
+                
+                progress_bar.progress((i + 1) / len(eval_df))
+            
+            status_text.text("Calculating metrics...")
+            
+            # Compute ROC
+            fpr_rule, tpr_rule, _ = roc_curve(y_true, rule_scores)
+            roc_auc_rule = auc(fpr_rule, tpr_rule)
+            
+            fpr_llm, tpr_llm, _ = roc_curve(y_true, llm_scores)
+            roc_auc_llm = auc(fpr_llm, tpr_llm)
+            
+            # Plotly Visualization
+            fig = go.Figure()
+            
+            # Diagonal line (Random Guess)
+            fig.add_trace(go.Scatter(x=[0, 1], y=[0, 1], mode='lines', 
+                                    line=dict(dash='dash', color='gray'), 
+                                    name='Random Guess (AUC = 0.50)'))
+            
+            # Rule-Based Curve
+            fig.add_trace(go.Scatter(x=fpr_rule, y=tpr_rule, mode='lines+markers', 
+                                    line=dict(color='#3b82f6', width=3), 
+                                    name=f'Rule-Based ABSA (AUC = {roc_auc_rule:.2f})'))
+            
+            # LLM-Based Curve
+            fig.add_trace(go.Scatter(x=fpr_llm, y=tpr_llm, mode='lines+markers', 
+                                    line=dict(color='#10b981', width=3), 
+                                    name=f'LLM-Based ABSA (AUC = {roc_auc_llm:.2f})'))
+            
+            fig.update_layout(
+                title='ROC Curve Comparison',
+                xaxis_title='False Positive Rate',
+                yaxis_title='True Positive Rate',
+                template='plotly_dark',
+                legend=dict(yanchor="bottom", y=0.01, xanchor="right", x=0.99),
+                height=600
+            )
+            
+            st.plotly_chart(fig, use_container_width=True)
+            
+            # Summary Metrics
+            col1, col2 = st.columns(2)
+            with col1:
+                st.metric("Rule-Based AUC", f"{roc_auc_rule:.2f}")
+            with col2:
+                st.metric("LLM-Based AUC", f"{roc_auc_llm:.2f}")
+                
+            st.success("Evaluation Complete! The graph shows how each model's granular aspect analysis correlates with the overall review sentiment.")
+        else:
+            st.error("Dataset not found. Please ensure processed_reviews.csv exists in the data directory.")
+
 # ============================================
 # ============================================
 # FOOTER
