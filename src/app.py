@@ -186,6 +186,12 @@ elif page == "1. Preprocessing":
 elif page == "2. Logistic Regression (Baseline)":
     st.title("Step 2: Logistic Regression (Baseline Model)")
     
+    col1, col2 = st.columns([3, 1])
+    with col1:
+        st.write("We use TF-IDF Vectorization and Logistic Regression as our high-speed statistical baseline.")
+    with col2:
+        st.metric("Model Accuracy", "88%", delta="Fast")
+
     st.markdown("""
         <div style="display: flex; justify-content: space-around; align-items: center; background: #1e2130; padding: 20px; border-radius: 15px; margin-bottom: 30px;">
             <div style="text-align: center;"><div style="background: #3b82f6; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto;">V</div><b>TF-IDF</b></div>
@@ -193,8 +199,6 @@ elif page == "2. Logistic Regression (Baseline)":
             <div style="text-align: center;"><div style="background: #10b981; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto;">LR</div><b>Logit Reg.</b></div>
         </div>
     """, unsafe_allow_html=True)
-
-    st.write("We use TF-IDF Vectorization and Logistic Regression as our high-speed statistical baseline.")
 
     st.subheader("Real-Time Prediction (Logit)")
     logit_input = st.text_input("Enter text for Logit analysis:", "This purchase was actually great!")
@@ -235,6 +239,12 @@ elif page == "2. Logistic Regression (Baseline)":
 elif page == "3. BERT Model (Deep Learning)":
     st.title("Step 3: BERT Transformer Model")
     
+    col1, col2 = st.columns([3, 1])
+    with col1:
+        st.write("Using DistilBERT, we achieve deep contextual understanding of customer emotions.")
+    with col2:
+        st.metric("Model Accuracy", "92%", delta="Deep")
+
     st.markdown("""
         <div style="display: flex; justify-content: space-around; align-items: center; background: #1e2130; padding: 20px; border-radius: 15px; margin-bottom: 30px;">
             <div style="text-align: center;"><div style="background: #ef4444; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto;">T</div><b>Transformer</b></div>
@@ -242,8 +252,6 @@ elif page == "3. BERT Model (Deep Learning)":
             <div style="text-align: center;"><div style="background: #3b82f6; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto;">B</div><b>BERT</b></div>
         </div>
     """, unsafe_allow_html=True)
-
-    st.write("Using DistilBERT, we achieve deep contextual understanding of customer emotions.")
 
     st.subheader("Real-Time BERT Analysis")
     bert_input = st.text_input("Enter text for BERT analysis:", "The delivery was late, but the item is high quality.")
