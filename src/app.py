@@ -16,10 +16,38 @@ st.set_page_config(
     page_icon=None,
     layout="wide"
 )
+# ============================================
+# HELPER FUNCTIONS (CACHED)
+# ============================================
+@st.cache_data
+def load_data():
+    try:
+        # Load the processed reviews dataset
+        return pd.read_csv("../data/processed_reviews.csv")
+    except:
+        return None
 
-# Sidebar - Output Settings (Must be defined before CSS usage)
+@st.cache_data
+def read_code(filename):
+    try:
+        with open(filename, "r", encoding="utf-8") as f:
+            return f.read()
+    except Exception as e:
+        return f"Error loading file: {e}"
+
+# ============================================
+# SIDEBAR NAVIGATION
+# ============================================
+st.sidebar.title("Project Pipeline")
+page = st.sidebar.radio(
+    "Navigation:",
+    ["Dashboard Overview", "1. Preprocessing", "2. Logistic Regression (Baseline)", "3. BERT Model (Deep Learning)", "4. Rule-Based ABSA", "5. LLM-Based ABSA", "Executive Insights", "Model Evaluation (ROC/AUC)", "Model Performance Dashboard"],
+    key="nav_radio"
+)
+
+st.sidebar.markdown("---")
+st.sidebar.subheader("Output Settings")
 print_mode = st.sidebar.toggle("Enable Print-Friendly Mode", help="Optimizes colors for black & white reports")
-
 
 # Custom CSS for better aesthetics
 if print_mode:
@@ -63,40 +91,6 @@ else:
         }
         </style>
         """, unsafe_allow_html=True)
-
-# ============================================
-# HELPER FUNCTIONS (CACHED)
-# ============================================
-@st.cache_data
-def load_data():
-    try:
-        # Load the processed reviews dataset
-        return pd.read_csv("../data/processed_reviews.csv")
-    except:
-        return None
-
-@st.cache_data
-def read_code(filename):
-    try:
-        with open(filename, "r", encoding="utf-8") as f:
-            return f.read()
-    except Exception as e:
-        return f"Error loading file: {e}"
-
-# ============================================
-# SIDEBAR NAVIGATION
-# ============================================
-st.sidebar.title("Project Pipeline")
-page = st.sidebar.radio(
-    "Navigation:",
-    ["Dashboard Overview", "1. Preprocessing", "2. Logistic Regression (Baseline)", "3. BERT Model (Deep Learning)", "4. Rule-Based ABSA", "5. LLM-Based ABSA", "Executive Insights", "Model Evaluation (ROC/AUC)", "Model Performance Dashboard"],
-    key="nav_radio"
-)
-
-st.sidebar.markdown("---")
-st.sidebar.subheader("Output Settings")
-# print_mode already defined above
-
 
 st.sidebar.markdown("---")
 st.sidebar.success("Model: Llama3 (Local)")
