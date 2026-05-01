@@ -17,6 +17,10 @@ st.set_page_config(
     layout="wide"
 )
 
+# Sidebar - Output Settings (Must be defined before CSS usage)
+print_mode = st.sidebar.toggle("Enable Print-Friendly Mode", help="Optimizes colors for black & white reports")
+
+
 # Custom CSS for better aesthetics
 if print_mode:
     st.markdown("""
@@ -91,7 +95,8 @@ page = st.sidebar.radio(
 
 st.sidebar.markdown("---")
 st.sidebar.subheader("Output Settings")
-print_mode = st.sidebar.toggle("Enable Print-Friendly Mode", help="Optimizes colors for black & white reports")
+# print_mode already defined above
+
 
 st.sidebar.markdown("---")
 st.sidebar.success("Model: Llama3 (Local)")
