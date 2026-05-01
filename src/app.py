@@ -49,6 +49,10 @@ st.sidebar.markdown("---")
 st.sidebar.subheader("Output Settings")
 print_mode = st.sidebar.toggle("Enable Print-Friendly Mode", help="Optimizes colors for black & white reports")
 
+# Define dynamic styles for pipeline banners
+banner_bg = "#f8f9fa" if print_mode else "#1e2130"
+banner_text = "#000000" if print_mode else "#ffffff"
+
 # Custom CSS for better aesthetics
 if print_mode:
     st.markdown("""
@@ -145,13 +149,13 @@ elif page == "1. Preprocessing":
     st.title("Step 1: Preprocessing & Tagging")
     
     # academic diagram
-    st.markdown("""
-        <div style="display: flex; justify-content: space-between; align-items: center; background: #1e2130; padding: 20px; border-radius: 15px; margin-bottom: 30px;">
-            <div style="text-align: center;"><div style="background: #3b82f6; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto;">T</div><b>Tokens</b></div>
+    st.markdown(f"""
+        <div style="display: flex; justify-content: space-between; align-items: center; background: {banner_bg}; color: {banner_text}; padding: 20px; border-radius: 15px; margin-bottom: 30px;">
+            <div style="text-align: center;"><div style="background: #3b82f6; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto; color: white;">T</div><b>Tokens</b></div>
             <div style="flex: 1; height: 2px; background: #3b82f6; margin: 0 10px;"></div>
-            <div style="text-align: center;"><div style="background: #10b981; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto;">S</div><b>Stopwords</b></div>
+            <div style="text-align: center;"><div style="background: #10b981; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto; color: white;">S</div><b>Stopwords</b></div>
             <div style="flex: 1; height: 2px; background: #10b981; margin: 0 10px;"></div>
-            <div style="text-align: center;"><div style="background: #ef4444; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto;">L</div><b>Lemmas</b></div>
+            <div style="text-align: center;"><div style="background: #ef4444; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto; color: white;">L</div><b>Lemmas</b></div>
         </div>
     """, unsafe_allow_html=True)
 
@@ -217,11 +221,11 @@ elif page == "2. Logistic Regression (Baseline)":
     with col2:
         st.metric("Model Accuracy", "88%", delta="Fast")
 
-    st.markdown("""
-        <div style="display: flex; justify-content: space-around; align-items: center; background: #1e2130; padding: 20px; border-radius: 15px; margin-bottom: 30px;">
-            <div style="text-align: center;"><div style="background: #3b82f6; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto;">V</div><b>TF-IDF</b></div>
+    st.markdown(f"""
+        <div style="display: flex; justify-content: space-around; align-items: center; background: {banner_bg}; color: {banner_text}; padding: 20px; border-radius: 15px; margin-bottom: 30px;">
+            <div style="text-align: center;"><div style="background: #3b82f6; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto; color: white;">V</div><b>TF-IDF</b></div>
             <div style="flex: 1; height: 2px; background: #3b82f6; margin: 0 10px;"></div>
-            <div style="text-align: center;"><div style="background: #10b981; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto;">LR</div><b>Logit Reg.</b></div>
+            <div style="text-align: center;"><div style="background: #10b981; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto; color: white;">LR</div><b>Logit Reg.</b></div>
         </div>
     """, unsafe_allow_html=True)
 
@@ -270,11 +274,11 @@ elif page == "3. BERT Model (Deep Learning)":
     with col2:
         st.metric("Model Accuracy", "92%", delta="Deep")
 
-    st.markdown("""
-        <div style="display: flex; justify-content: space-around; align-items: center; background: #1e2130; padding: 20px; border-radius: 15px; margin-bottom: 30px;">
-            <div style="text-align: center;"><div style="background: #ef4444; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto;">T</div><b>Transformer</b></div>
+    st.markdown(f"""
+        <div style="display: flex; justify-content: space-around; align-items: center; background: {banner_bg}; color: {banner_text}; padding: 20px; border-radius: 15px; margin-bottom: 30px;">
+            <div style="text-align: center;"><div style="background: #ef4444; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto; color: white;">T</div><b>Transformer</b></div>
             <div style="flex: 1; height: 2px; background: #ef4444; margin: 0 10px;"></div>
-            <div style="text-align: center;"><div style="background: #3b82f6; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto;">B</div><b>BERT</b></div>
+            <div style="text-align: center;"><div style="background: #3b82f6; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto; color: white;">B</div><b>BERT</b></div>
         </div>
     """, unsafe_allow_html=True)
 
@@ -341,13 +345,13 @@ elif page == "4. Rule-Based ABSA":
     with col2:
         st.metric("Estimated Accuracy", "75%", delta="Stable")
 
-    st.markdown("""
-        <div style="display: flex; justify-content: space-around; align-items: center; background: #1e2130; padding: 20px; border-radius: 15px; margin-bottom: 30px;">
-            <div style="text-align: center;"><div style="background: #3b82f6; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto;">A</div><b>Aspects</b></div>
+    st.markdown(f"""
+        <div style="display: flex; justify-content: space-around; align-items: center; background: {banner_bg}; color: {banner_text}; padding: 20px; border-radius: 15px; margin-bottom: 30px;">
+            <div style="text-align: center;"><div style="background: #3b82f6; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto; color: white;">A</div><b>Aspects</b></div>
             <div style="flex: 1; height: 2px; background: #3b82f6; margin: 0 10px;"></div>
-            <div style="text-align: center;"><div style="background: #f59e0b; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto;">W</div><b>Window</b></div>
+            <div style="text-align: center;"><div style="background: #f59e0b; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto; color: white;">W</div><b>Window</b></div>
             <div style="flex: 1; height: 2px; background: #f59e0b; margin: 0 10px;"></div>
-            <div style="text-align: center;"><div style="background: #ef4444; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto;">N</div><b>Negation</b></div>
+            <div style="text-align: center;"><div style="background: #ef4444; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto; color: white;">N</div><b>Negation</b></div>
         </div>
     """, unsafe_allow_html=True)
 
@@ -391,13 +395,13 @@ elif page == "5. LLM-Based ABSA":
     with col2:
         st.metric("Estimated Accuracy", "95-100%", delta="SOTA")
 
-    st.markdown("""
-        <div style="display: flex; justify-content: space-around; align-items: center; background: #1e2130; padding: 20px; border-radius: 15px; margin-bottom: 30px;">
-            <div style="text-align: center;"><div style="background: #ef4444; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto;">P</div><b>Prompt</b></div>
+    st.markdown(f"""
+        <div style="display: flex; justify-content: space-around; align-items: center; background: {banner_bg}; color: {banner_text}; padding: 20px; border-radius: 15px; margin-bottom: 30px;">
+            <div style="text-align: center;"><div style="background: #ef4444; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto; color: white;">P</div><b>Prompt</b></div>
             <div style="flex: 1; height: 2px; background: #ef4444; margin: 0 10px;"></div>
-            <div style="text-align: center;"><div style="background: #3b82f6; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto;">L3</div><b>Llama3</b></div>
+            <div style="text-align: center;"><div style="background: #3b82f6; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto; color: white;">L3</div><b>Llama3</b></div>
             <div style="flex: 1; height: 2px; background: #3b82f6; margin: 0 10px;"></div>
-            <div style="text-align: center;"><div style="background: #10b981; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto;">J</div><b>JSON</b></div>
+            <div style="text-align: center;"><div style="background: #10b981; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto; color: white;">J</div><b>JSON</b></div>
         </div>
     """, unsafe_allow_html=True)
 
@@ -554,8 +558,8 @@ elif page == "Model Evaluation (ROC/AUC)":
     import plotly.graph_objects as go
     import ast
 
-    st.markdown("""
-        <div style="background: #1e2130; padding: 20px; border-radius: 15px; margin-bottom: 30px;">
+    st.markdown(f"""
+        <div style="background: {banner_bg}; color: {banner_text}; padding: 20px; border-radius: 15px; border: 1px solid #dee2e6; margin-bottom: 30px;">
             <h4>Why ROC, AUC & Accuracy?</h4>
             <p>The <b>Receiver Operating Characteristic (ROC)</b> curve shows the trade-off between sensitivity and specificity. 
             The <b>Area Under the Curve (AUC)</b> measures the overall ability of the model to distinguish between classes.
