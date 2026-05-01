@@ -35,6 +35,14 @@ def read_code(filename):
     except Exception as e:
         return f"Error loading file: {e}"
 
+@st.cache_data
+def load_model_results():
+    try:
+        with open("../data/model_results.json", "r") as f:
+            return json.load(f)
+    except:
+        return None
+
 # ============================================
 # SIDEBAR NAVIGATION
 # ============================================
