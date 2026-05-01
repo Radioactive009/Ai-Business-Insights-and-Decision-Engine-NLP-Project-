@@ -272,7 +272,7 @@ elif page == "3. BERT Model (Deep Learning)":
     with col1:
         st.write("Using DistilBERT, we achieve deep contextual understanding of customer emotions.")
     with col2:
-        st.metric("Model Accuracy", "92%", delta="Deep")
+        st.metric("Model Accuracy", "75%", delta="Deep")
 
     st.markdown(f"""
         <div style="display: flex; justify-content: space-around; align-items: center; background: {banner_bg}; color: {banner_text}; padding: 20px; border-radius: 15px; margin-bottom: 30px;">
