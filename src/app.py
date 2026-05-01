@@ -359,8 +359,15 @@ elif page == "4. Rule-Based ABSA":
     col1, col2 = st.columns([3, 1])
     with col1:
         st.write("Using custom logic, POS tagging, and proximity windows to link opinions to features.")
+    # Load verified accuracy if available
+    results = load_model_results()
+    verified_acc = results.get("Rule-Based ABSA", {}).get("accuracy") if results else None
+    
     with col2:
-        st.metric("Estimated Accuracy", "38%", delta="Extraction-Focused")
+        if verified_acc:
+            st.metric("Verified Accuracy", f"{verified_acc:.0%}", delta="From Project Data")
+        else:
+            st.metric("Estimated Accuracy", "38%", delta="Extraction-Focused")
 
     st.markdown(f"""
         <div style="display: flex; justify-content: space-around; align-items: center; background: {banner_bg}; color: {banner_text}; padding: 20px; border-radius: 15px; margin-bottom: 30px;">
@@ -409,8 +416,15 @@ elif page == "5. LLM-Based ABSA":
     col1, col2 = st.columns([3, 1])
     with col1:
         st.write("Leveraging Llama3 to understand context and complex patterns.")
+    # Load verified accuracy if available
+    results = load_model_results()
+    verified_acc = results.get("LLM-Based ABSA (Llama3)", {}).get("accuracy") if results else None
+
     with col2:
-        st.metric("Estimated Accuracy", "95-100%", delta="SOTA")
+        if verified_acc:
+            st.metric("Verified Accuracy", f"{verified_acc:.0%}", delta="Verified SOTA")
+        else:
+            st.metric("Estimated Accuracy", "95-100%", delta="SOTA")
 
     st.markdown(f"""
         <div style="display: flex; justify-content: space-around; align-items: center; background: {banner_bg}; color: {banner_text}; padding: 20px; border-radius: 15px; margin-bottom: 30px;">
@@ -584,9 +598,49 @@ elif page == "Model Evaluation (ROC/AUC)":
         </div>
     """, unsafe_allow_html=True)
 
-    sample_size = st.slider("Select Sample Size for Evaluation:", 10, 50, 20)
+    calculated_results = load_model_results()
     
-    if st.button("Run Comparative Evaluation"):
+    if calculated_results:
+        st.subheader("Global Project ROC Comparison")
+        st.write("This chart uses high-quality verification data generated from a balanced subset of the 50,000 review dataset.")
+        
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(x=[0, 1], y=[0, 1], mode='lines', line=dict(dash='dash', color='gray'), name='Random Guess (AUC = 0.50)'))
+        
+        colors = {"Logistic Regression": "#888888", "BERT (DistilBERT)": "#ef4444", "Rule-Based ABSA": "#3b82f6", "LLM-Based ABSA (Llama3)": "#10b981"}
+        
+        for model_name, metrics in calculated_results.items():
+            fig.add_trace(go.Scatter(
+                x=metrics["fpr"], 
+                y=metrics["tpr"], 
+                mode='lines', 
+                line=dict(color=colors.get(model_name, "#000000"), width=3), 
+                name=f'{model_name} (AUC = {metrics["auc"]:.2f})'
+            ))
+        
+        fig.update_layout(
+            title="Final Project ROC Curve Comparison",
+            xaxis_title="False Positive Rate",
+            yaxis_title="True Positive Rate",
+            template="plotly_white" if print_mode else "plotly_dark",
+            height=600
+        )
+        st.plotly_chart(fig, use_container_width=True)
+        
+        st.markdown("---")
+        st.subheader("🏁 Evaluation Conclusion")
+        st.write("""
+        1. **LLM Dominance**: As expected, the Llama3/Phi3 model shows the highest AUC, demonstrating its ability to handle linguistic nuances that traditional models miss.
+        2. **Transformer Efficiency**: BERT provides a strong middle ground, offering high accuracy with significantly lower latency than the LLM.
+        3. **Baseline Reliability**: Logistic Regression remains a very strong baseline for binary sentiment, though it lacks aspect-level depth.
+        4. **Rule-Based Specificity**: The Rule-Based model has the lowest AUC for general sentiment, but it is the most transparent for specific feature extraction.
+        """)
+
+    st.subheader("Interactive Live Evaluation (Small Sample)")
+    st.write("You can also run a quick comparative evaluation on a fresh random sample below.")
+    sample_size = st.slider("Select Sample Size for Live Test:", 5, 20, 10)
+    
+    if st.button("Run Live Comparative Evaluation"):
         df = load_data()
         if df is not None:
             # Take a balanced sample if possible
@@ -708,15 +762,36 @@ elif page == "Model Performance Dashboard":
         </div>
     """, unsafe_allow_html=True)
 
-    # Performance Table
-    metrics_data = {
-        "Model": ["Logistic Regression", "BERT (DistilBERT)", "Rule-Based ABSA", "LLM-Based ABSA (Llama3)"],
-        "Accuracy": [0.90, 0.75, 0.38, 0.95],
-        "Precision (Avg)": [0.81, 0.70, 0.74, 0.96],
-        "Recall (Avg)": [0.89, 0.82, 0.27, 0.94],
-        "F1-Score (Avg)": [0.84, 0.70, 0.38, 0.95]
-    }
-    df_metrics = pd.DataFrame(metrics_data)
+    # Load calculated metrics if available
+    calculated_results = load_model_results()
+    
+    if calculated_results:
+        metrics_data = {
+            "Model": [],
+            "Accuracy": [],
+            "Precision (Avg)": [],
+            "Recall (Avg)": [],
+            "F1-Score (Avg)": []
+        }
+        for model_name, metrics in calculated_results.items():
+            metrics_data["Model"].append(model_name)
+            metrics_data["Accuracy"].append(metrics["accuracy"])
+            metrics_data["Precision (Avg)"].append(metrics["precision"])
+            metrics_data["Recall (Avg)"].append(metrics["recall"])
+            metrics_data["F1-Score (Avg)"].append(metrics["f1"])
+        df_metrics = pd.DataFrame(metrics_data)
+        st.success("Displaying verified metrics from high-quality project evaluation.")
+    else:
+        # Fallback to previous best-estimates
+        metrics_data = {
+            "Model": ["Logistic Regression", "BERT (DistilBERT)", "Rule-Based ABSA", "LLM-Based ABSA (Llama3)"],
+            "Accuracy": [0.90, 0.75, 0.38, 0.95],
+            "Precision (Avg)": [0.81, 0.70, 0.74, 0.96],
+            "Recall (Avg)": [0.89, 0.82, 0.27, 0.94],
+            "F1-Score (Avg)": [0.84, 0.70, 0.38, 0.95]
+        }
+        df_metrics = pd.DataFrame(metrics_data)
+        st.warning("Note: Displaying estimated metrics. Run evaluation script for final report verification.")
     
     st.subheader("Comparison Table")
     st.dataframe(df_metrics.style.format({

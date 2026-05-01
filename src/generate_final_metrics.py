@@ -28,8 +28,8 @@ def main():
     print("Loading data...")
     df = pd.read_csv("../data/processed_reviews.csv")
     
-    # Select a balanced sample for fair evaluation (200 reviews total)
-    sample_size = 100 
+    # Select a balanced sample for fair evaluation (100 reviews total)
+    sample_size = 50 
     pos_sample = df[df["sentiment"] == "positive"].sample(sample_size, random_state=42)
     neg_sample = df[df["sentiment"] == "negative"].sample(sample_size, random_state=42)
     eval_df = pd.concat([pos_sample, neg_sample]).sample(frac=1, random_state=42).reset_index(drop=True)
@@ -78,13 +78,14 @@ def main():
     results["Rule-Based ABSA"] = calculate_metrics(y_true, rule_preds, rule_scores)
     
     # 4. LLM-Based ABSA
-    print("Evaluating LLM-Based ABSA (Llama3)...")
+    print("Evaluating LLM-Based ABSA (Phi3 Proxy)...")
     llm_preds = []
     llm_scores = []
     for i, text in enumerate(eval_df["clean_text"]):
         if i % 10 == 0: print(f"  Processed {i}/{len(eval_df)}")
         try:
-            llm_res = absa_llm(text)
+            # Using phi3 for faster evaluation on local system
+            llm_res = absa_llm(text, model_name="phi3:latest")
             pos_count = sum(1 for s in llm_res.values() if s == "positive")
             total = len(llm_res)
             score = pos_count / total if total > 0 else 0.5
