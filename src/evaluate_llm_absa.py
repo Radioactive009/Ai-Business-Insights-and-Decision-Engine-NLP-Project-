@@ -6,17 +6,17 @@ from absa_llm import absa_llm
 df = pd.read_csv("../data/processed_reviews.csv")
 df = df.dropna(subset=["clean_text", "sentiment"])
 
-# Sample 20 reviews (LLM is slow)
-sample_df = df.sample(20, random_state=42)
+# Sample 5 reviews (LLM is slow)
+sample_df = df.sample(5, random_state=42)
 
 y_true = sample_df["sentiment"].tolist()
 y_pred = []
 
-print("Evaluating LLM-Based ABSA (Llama3) on 20 samples...")
+print("Evaluating LLM-Based ABSA (Llama3) on 5 samples...")
 for i, row in sample_df.iterrows():
-    print(f"Processing {i+1}/20...")
+    print(f"Processing sample...")
     try:
-        res = absa_llm(row["clean_text"])
+        res = absa_llm(row["clean_text"], model_name="phi3:latest")
         if not res:
             y_pred.append("neutral")
             continue

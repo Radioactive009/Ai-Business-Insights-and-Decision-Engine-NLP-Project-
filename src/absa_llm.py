@@ -84,7 +84,7 @@ Return a flat JSON dictionary for this review:
                 return {}
 
     # Final fallback if parsing failed
-    print(f"⚠️ Warning: Model {model_name} returned invalid output.")
+    print(f"[WARNING] Model {model_name} returned invalid output.")
     return {}
 
 
