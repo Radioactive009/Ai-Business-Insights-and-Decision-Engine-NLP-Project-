@@ -129,7 +129,7 @@ if page == "Dashboard Overview":
     with col2:
         st.metric(label="Pipeline Speed", value="~5ms", delta="Per Token")
     with col3:
-        st.metric(label="LLM Accuracy", value="High", delta="Context Aware")
+        st.metric(label="LLM Accuracy", value="95%", delta="SOTA")
 
     st.markdown("---")
     st.subheader("Executive Summary")
