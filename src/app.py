@@ -655,27 +655,33 @@ elif page == "Model Performance Dashboard":
     
     # Overview Metrics in Cards
     col1, col2, col3, col4 = st.columns(4)
+    card_bg = "#f8f9fa" if print_mode else "#1e2130"
+    card_text = "#000000" if print_mode else "#ffffff"
+    card_border = "#333333" if print_mode else "transparent"
+    
     with col1:
-        st.markdown('<div style="background-color:#1e2130; padding:20px; border-radius:10px; border-left:5px solid #3b82f6; text-align:center;">'
-                    '<h3 style="margin:0; color:#3b82f6;">90%</h3>'
+        st.markdown(f'<div style="background-color:{card_bg}; color:{card_text}; padding:20px; border-radius:10px; border-left:5px solid #3b82f6; border-top:1px solid {card_border}; border-right:1px solid {card_border}; border-bottom:1px solid {card_border}; text-align:center;">'
+                    f'<h3 style="margin:0; color:#3b82f6;">90%</h3>'
                     '<p style="margin:0;">Top Accuracy</p></div>', unsafe_allow_html=True)
     with col2:
-        st.markdown('<div style="background-color:#1e2130; padding:20px; border-radius:10px; border-left:5px solid #10b981; text-align:center;">'
-                    '<h3 style="margin:0; color:#10b981;">98%</h3>'
+        st.markdown(f'<div style="background-color:{card_bg}; color:{card_text}; padding:20px; border-radius:10px; border-left:5px solid #10b981; border-top:1px solid {card_border}; border-right:1px solid {card_border}; border-bottom:1px solid {card_border}; text-align:center;">'
+                    f'<h3 style="margin:0; color:#10b981;">98%</h3>'
                     '<p style="margin:0;">Top Precision</p></div>', unsafe_allow_html=True)
     with col3:
-        st.markdown('<div style="background-color:#1e2130; padding:20px; border-radius:10px; border-left:5px solid #ef4444; text-align:center;">'
-                    '<h3 style="margin:0; color:#ef4444;">93%</h3>'
+        st.markdown(f'<div style="background-color:{card_bg}; color:{card_text}; padding:20px; border-radius:10px; border-left:5px solid #ef4444; border-top:1px solid {card_border}; border-right:1px solid {card_border}; border-bottom:1px solid {card_border}; text-align:center;">'
+                    f'<h3 style="margin:0; color:#ef4444;">93%</h3>'
                     '<p style="margin:0;">Top Recall</p></div>', unsafe_allow_html=True)
     with col4:
-        st.markdown('<div style="background-color:#1e2130; padding:20px; border-radius:10px; border-left:5px solid #f59e0b; text-align:center;">'
-                    '<h3 style="margin:0; color:#f59e0b;">SOTA</h3>'
+        st.markdown(f'<div style="background-color:{card_bg}; color:{card_text}; padding:20px; border-radius:10px; border-left:5px solid #f59e0b; border-top:1px solid {card_border}; border-right:1px solid {card_border}; border-bottom:1px solid {card_border}; text-align:center;">'
+                    f'<h3 style="margin:0; color:#f59e0b;">SOTA</h3>'
                     '<p style="margin:0;">LLM Intelligence</p></div>', unsafe_allow_html=True)
 
     st.write("") # Spacing
 
-    st.markdown("""
-        <div style="background: #1e2130; padding: 20px; border-radius: 15px; margin-bottom: 30px;">
+    banner_bg = "#f8f9fa" if print_mode else "#1e2130"
+    banner_text = "#000000" if print_mode else "#ffffff"
+    st.markdown(f"""
+        <div style="background: {banner_bg}; color: {banner_text}; padding: 20px; border-radius: 15px; border: 1px solid #dee2e6; margin-bottom: 30px;">
             <h4>Model Performance Analysis</h4>
             <p>This dashboard presents the technical performance of every model used in this project. 
             Metrics are calculated against a ground-truth dataset of 50,000 Amazon Electronics reviews.</p>
@@ -704,10 +710,23 @@ elif page == "Model Performance Dashboard":
     import plotly.express as px
     
     st.subheader("Visual Performance Comparison")
+    
+    chart_template = "plotly_white" if print_mode else "plotly_dark"
+    # Use distinct shades of grey/blue for print mode
+    color_seq = ["#333333", "#777777"] if print_mode else ["#3b82f6", "#10b981"]
+    
     fig = px.bar(df_metrics, x="Model", y=["Accuracy", "F1-Score (Avg)"], 
                  barmode="group", 
-                 color_discrete_sequence=["#3b82f6", "#10b981"],
-                 template="plotly_dark")
+                 color_discrete_sequence=color_seq,
+                 template=chart_template)
+    
+    if print_mode:
+        fig.update_layout(
+            font=dict(color="black"),
+            plot_bgcolor="white",
+            paper_bgcolor="white"
+        )
+        
     st.plotly_chart(fig, use_container_width=True)
 
     # Detailed Insights per Model
