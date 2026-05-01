@@ -53,6 +53,15 @@ print_mode = st.sidebar.toggle("Enable Print-Friendly Mode", help="Optimizes col
 banner_bg = "#f8f9fa" if print_mode else "#1e2130"
 banner_text = "#000000" if print_mode else "#ffffff"
 
+# Dynamic icon colors
+blue_icon = "#ffffff" if print_mode else "#3b82f6"
+green_icon = "#ffffff" if print_mode else "#10b981"
+red_icon = "#ffffff" if print_mode else "#ef4444"
+orange_icon = "#ffffff" if print_mode else "#f59e0b"
+
+icon_text = "#000000" if print_mode else "#ffffff"
+line_color = "#000000" if print_mode else None # Use None to fallback to icon color if not print_mode
+
 # Custom CSS for better aesthetics
 if print_mode:
     st.markdown("""
@@ -151,11 +160,11 @@ elif page == "1. Preprocessing":
     # academic diagram
     st.markdown(f"""
         <div style="display: flex; justify-content: space-between; align-items: center; background: {banner_bg}; color: {banner_text}; padding: 20px; border-radius: 15px; margin-bottom: 30px;">
-            <div style="text-align: center;"><div style="background: #3b82f6; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto; color: white;">T</div><b>Tokens</b></div>
-            <div style="flex: 1; height: 2px; background: #3b82f6; margin: 0 10px;"></div>
-            <div style="text-align: center;"><div style="background: #10b981; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto; color: white;">S</div><b>Stopwords</b></div>
-            <div style="flex: 1; height: 2px; background: #10b981; margin: 0 10px;"></div>
-            <div style="text-align: center;"><div style="background: #ef4444; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto; color: white;">L</div><b>Lemmas</b></div>
+            <div style="text-align: center;"><div style="background: {blue_icon}; color: {icon_text}; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto; border: 1px solid #000;">T</div><b>Tokens</b></div>
+            <div style="flex: 1; height: 2px; background: {line_color or '#3b82f6'}; margin: 0 10px;"></div>
+            <div style="text-align: center;"><div style="background: {green_icon}; color: {icon_text}; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto; border: 1px solid #000;">S</div><b>Stopwords</b></div>
+            <div style="flex: 1; height: 2px; background: {line_color or '#10b981'}; margin: 0 10px;"></div>
+            <div style="text-align: center;"><div style="background: {red_icon}; color: {icon_text}; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto; border: 1px solid #000;">L</div><b>Lemmas</b></div>
         </div>
     """, unsafe_allow_html=True)
 
@@ -223,9 +232,9 @@ elif page == "2. Logistic Regression (Baseline)":
 
     st.markdown(f"""
         <div style="display: flex; justify-content: space-around; align-items: center; background: {banner_bg}; color: {banner_text}; padding: 20px; border-radius: 15px; margin-bottom: 30px;">
-            <div style="text-align: center;"><div style="background: #3b82f6; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto; color: white;">V</div><b>TF-IDF</b></div>
-            <div style="flex: 1; height: 2px; background: #3b82f6; margin: 0 10px;"></div>
-            <div style="text-align: center;"><div style="background: #10b981; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto; color: white;">LR</div><b>Logit Reg.</b></div>
+            <div style="text-align: center;"><div style="background: {blue_icon}; color: {icon_text}; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto; border: 1px solid #000;">V</div><b>TF-IDF</b></div>
+            <div style="flex: 1; height: 2px; background: {line_color or '#3b82f6'}; margin: 0 10px;"></div>
+            <div style="text-align: center;"><div style="background: {green_icon}; color: {icon_text}; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto; border: 1px solid #000;">LR</div><b>Logit Reg.</b></div>
         </div>
     """, unsafe_allow_html=True)
 
@@ -276,9 +285,9 @@ elif page == "3. BERT Model (Deep Learning)":
 
     st.markdown(f"""
         <div style="display: flex; justify-content: space-around; align-items: center; background: {banner_bg}; color: {banner_text}; padding: 20px; border-radius: 15px; margin-bottom: 30px;">
-            <div style="text-align: center;"><div style="background: #ef4444; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto; color: white;">T</div><b>Transformer</b></div>
-            <div style="flex: 1; height: 2px; background: #ef4444; margin: 0 10px;"></div>
-            <div style="text-align: center;"><div style="background: #3b82f6; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto; color: white;">B</div><b>BERT</b></div>
+            <div style="text-align: center;"><div style="background: {red_icon}; color: {icon_text}; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto; border: 1px solid #000;">T</div><b>Transformer</b></div>
+            <div style="flex: 1; height: 2px; background: {line_color or '#ef4444'}; margin: 0 10px;"></div>
+            <div style="text-align: center;"><div style="background: {blue_icon}; color: {icon_text}; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto; border: 1px solid #000;">B</div><b>BERT</b></div>
         </div>
     """, unsafe_allow_html=True)
 
@@ -347,11 +356,11 @@ elif page == "4. Rule-Based ABSA":
 
     st.markdown(f"""
         <div style="display: flex; justify-content: space-around; align-items: center; background: {banner_bg}; color: {banner_text}; padding: 20px; border-radius: 15px; margin-bottom: 30px;">
-            <div style="text-align: center;"><div style="background: #3b82f6; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto; color: white;">A</div><b>Aspects</b></div>
-            <div style="flex: 1; height: 2px; background: #3b82f6; margin: 0 10px;"></div>
-            <div style="text-align: center;"><div style="background: #f59e0b; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto; color: white;">W</div><b>Window</b></div>
-            <div style="flex: 1; height: 2px; background: #f59e0b; margin: 0 10px;"></div>
-            <div style="text-align: center;"><div style="background: #ef4444; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto; color: white;">N</div><b>Negation</b></div>
+            <div style="text-align: center;"><div style="background: {blue_icon}; color: {icon_text}; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto; border: 1px solid #000;">A</div><b>Aspects</b></div>
+            <div style="flex: 1; height: 2px; background: {line_color or '#3b82f6'}; margin: 0 10px;"></div>
+            <div style="text-align: center;"><div style="background: {orange_icon}; color: {icon_text}; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto; border: 1px solid #000;">W</div><b>Window</b></div>
+            <div style="flex: 1; height: 2px; background: {line_color or '#f59e0b'}; margin: 0 10px;"></div>
+            <div style="text-align: center;"><div style="background: {red_icon}; color: {icon_text}; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto; border: 1px solid #000;">N</div><b>Negation</b></div>
         </div>
     """, unsafe_allow_html=True)
 
@@ -397,11 +406,11 @@ elif page == "5. LLM-Based ABSA":
 
     st.markdown(f"""
         <div style="display: flex; justify-content: space-around; align-items: center; background: {banner_bg}; color: {banner_text}; padding: 20px; border-radius: 15px; margin-bottom: 30px;">
-            <div style="text-align: center;"><div style="background: #ef4444; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto; color: white;">P</div><b>Prompt</b></div>
-            <div style="flex: 1; height: 2px; background: #ef4444; margin: 0 10px;"></div>
-            <div style="text-align: center;"><div style="background: #3b82f6; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto; color: white;">L3</div><b>Llama3</b></div>
-            <div style="flex: 1; height: 2px; background: #3b82f6; margin: 0 10px;"></div>
-            <div style="text-align: center;"><div style="background: #10b981; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto; color: white;">J</div><b>JSON</b></div>
+            <div style="text-align: center;"><div style="background: {red_icon}; color: {icon_text}; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto; border: 1px solid #000;">P</div><b>Prompt</b></div>
+            <div style="flex: 1; height: 2px; background: {line_color or '#ef4444'}; margin: 0 10px;"></div>
+            <div style="text-align: center;"><div style="background: {blue_icon}; color: {icon_text}; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto; border: 1px solid #000;">L3</div><b>Llama3</b></div>
+            <div style="flex: 1; height: 2px; background: {line_color or '#3b82f6'}; margin: 0 10px;"></div>
+            <div style="text-align: center;"><div style="background: {green_icon}; color: {icon_text}; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; margin: 0 auto; border: 1px solid #000;">J</div><b>JSON</b></div>
         </div>
     """, unsafe_allow_html=True)
 
