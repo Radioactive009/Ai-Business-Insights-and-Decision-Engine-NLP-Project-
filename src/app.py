@@ -343,7 +343,7 @@ elif page == "4. Rule-Based ABSA":
     with col1:
         st.write("Using custom logic, POS tagging, and proximity windows to link opinions to features.")
     with col2:
-        st.metric("Estimated Accuracy", "75%", delta="Stable")
+        st.metric("Estimated Accuracy", "38%", delta="Extraction-Focused")
 
     st.markdown(f"""
         <div style="display: flex; justify-content: space-around; align-items: center; background: {banner_bg}; color: {banner_text}; padding: 20px; border-radius: 15px; margin-bottom: 30px;">
