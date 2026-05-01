@@ -63,7 +63,7 @@ def read_code(filename):
 st.sidebar.title("Project Pipeline")
 page = st.sidebar.radio(
     "Navigation:",
-    ["Dashboard Overview", "1. Preprocessing", "2. Logistic Regression (Baseline)", "3. BERT Model (Deep Learning)", "4. Rule-Based ABSA", "5. LLM-Based ABSA", "Executive Insights", "Model Evaluation (ROC/AUC)"],
+    ["Dashboard Overview", "1. Preprocessing", "2. Logistic Regression (Baseline)", "3. BERT Model (Deep Learning)", "4. Rule-Based ABSA", "5. LLM-Based ABSA", "Executive Insights", "Model Evaluation (ROC/AUC)", "Model Performance Dashboard"],
     key="nav_radio"
 )
 

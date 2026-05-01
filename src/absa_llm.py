@@ -76,11 +76,11 @@ Return a flat JSON dictionary for this review:
 
         except Exception as e:
             if attempt == 0:
-                print(f"🔄 Network glitch (500), retrying in 2 seconds...")
+                print(f"[RETRY] Network glitch (500), retrying in 2 seconds...")
                 time.sleep(2)
                 continue
             else:
-                print(f"❌ Connection Error after retry: {e}")
+                print(f"[ERROR] Connection Error after retry: {e}")
                 return {}
 
     # Final fallback if parsing failed
