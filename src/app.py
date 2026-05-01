@@ -18,25 +18,47 @@ st.set_page_config(
 )
 
 # Custom CSS for better aesthetics
-st.markdown("""
-    <style>
-    .main {
-        background-color: #0e1117;
-    }
-    .stMetric {
-        background-color: #1e2130;
-        padding: 15px;
-        border-radius: 10px;
-    }
-    .pipeline-node {
-        background-color: #262730;
-        padding: 20px;
-        border-radius: 10px;
-        border-left: 5px solid #4CAF50;
-        margin-bottom: 10px;
-    }
-    </style>
-    """, unsafe_allow_html=True)
+if print_mode:
+    st.markdown("""
+        <style>
+        .main {
+            background-color: #ffffff;
+            color: #000000;
+        }
+        .stMetric, .pipeline-node, div[style*="background-color: #1e2130"] {
+            background-color: #f8f9fa !important;
+            border: 1px solid #dee2e6 !important;
+            color: #000000 !important;
+        }
+        h1, h2, h3, h4, h5, h6, p, span, label {
+            color: #000000 !important;
+        }
+        .stExpander {
+            background-color: #ffffff !important;
+            border: 1px solid #dee2e6 !important;
+        }
+        </style>
+        """, unsafe_allow_html=True)
+else:
+    st.markdown("""
+        <style>
+        .main {
+            background-color: #0e1117;
+        }
+        .stMetric {
+            background-color: #1e2130;
+            padding: 15px;
+            border-radius: 10px;
+        }
+        .pipeline-node {
+            background-color: #262730;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid #4CAF50;
+            margin-bottom: 10px;
+        }
+        </style>
+        """, unsafe_allow_html=True)
 
 # ============================================
 # HELPER FUNCTIONS (CACHED)
