@@ -1,4 +1,4 @@
-# AI Customer Intelligence & Decision Engine 🚀
+# AI Customer Intelligence & Decision Engine
 
 [![Python](https://img.shields.io/badge/Python-3.9+-blue.svg)](https://www.python.org/)
 [![Streamlit](https://img.shields.io/badge/Streamlit-Premium--UI-red.svg)](https://streamlit.io/)
@@ -14,7 +14,7 @@ In a world where 90% of data is unstructured, businesses are drowning in feedbac
 
 ---
 
-## 🧩 System Architecture
+##  System Architecture
 
 ```mermaid
 graph TD
@@ -47,24 +47,24 @@ graph TD
 
 ---
 
-## ✨ Key Features
+##  Key Features
 
-### 1. 🧠 Hybrid Sentiment Intelligence
+### 1.  Hybrid Sentiment Intelligence
 We use a "Dual-Brain" approach to balance efficiency and accuracy:
 *   **Statistical Logic:** TF-IDF + Logistic Regression for high-speed indexing.
 *   **Contextual Logic:** BERT (Bidirectional Encoder Representations from Transformers) for understanding nuance.
 
-### 2. 🔍 Granular ABSA (Aspect-Based Sentiment Analysis)
+### 2.  Granular ABSA (Aspect-Based Sentiment Analysis)
 The system goes beyond "Good" or "Bad". It identifies specific product features:
 *   **Aspects:** Battery, Camera, Screen, Price, Durability.
 *   **Logic:** Uses a custom **Proximity Window Algorithm** to link adjectives to the nearest relevant feature.
 
-### 3. 💼 Executive Decision Engine
+### 3.  Executive Decision Engine
 Integrated **Llama3 (8B)** to act as a Virtual CEO. It analyzes thousands of review-clusters to generate:
 *   **Strategic Advice:** Automated product improvement suggestions.
 *   **Market Positioning:** Identifying where the brand wins vs. where it fails.
 
-### 4. 📊 Premium Analytics Dashboard
+### 4.  Premium Analytics Dashboard
 Built with a high-end Streamlit UI, featuring:
 *   Interactive word clouds and trend graphs.
 *   Real-time model performance comparisons (Accuracy vs. F1).
@@ -72,7 +72,7 @@ Built with a high-end Streamlit UI, featuring:
 
 ---
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 | Layer | Technology |
 | :--- | :--- |
@@ -85,7 +85,7 @@ Built with a high-end Streamlit UI, featuring:
 
 ---
 
-## 🚀 Getting Started
+##  Getting Started
 
 ### 1. Clone & Install
 ```bash
